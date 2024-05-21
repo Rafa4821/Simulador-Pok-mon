@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Battle Simulator</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de inicio -->
+        <div id="start-screen" class="screen active">
+            <h1>Simulador de Batalla Pokémon</h1>
+            <button id="start-button">Empezar Batalla</button>
+        </div>
+        
+        <!-- Pantalla de selección de equipo -->
+        <div id="team-selection-screen" class="screen">
+            <h2>Selecciona tu equipo de Pokémon</h2>
+            <div id="available-pokemon" class="pokemon-list">
+                <!-- Aquí se cargarán los Pokémon disponibles para seleccionar -->
+            </div>
+            <div id="selected-team" class="pokemon-list">
+                <h3>Equipo Seleccionado</h3>
+                <!-- Aquí se mostrarán los Pokémon seleccionados -->
+            </div>
+            <button id="confirm-team-button" disabled>Confirmar Equipo</button>
+        </div>
+
+        <!-- Pantalla de batalla -->
+        <div id="battle-screen" class="screen">
+            <div id="enemy-pokemon" class="pokemon-display">
+                <!-- Imagen del Pokémon enemigo -->
+            </div>
+            <div id="battle-log" class="battle-log">
+                <!-- Registro de la batalla -->
+            </div>
+            <div id="player-pokemon" class="pokemon-display">
+                <!-- Imagen del Pokémon del usuario -->
+            </div>
+            <div id="move-buttons" class="move-buttons">
+                <!-- Botones de movimientos -->
+            </div>
+        </div>
+    </div>
+    <script src="temp/ui.js"></script>
+    <script src="temp/logic.js"></script>
+</body>
+</html>
+
