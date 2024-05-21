@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-    width: 80%;
+    width: 90%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -58,8 +58,6 @@ button:disabled {
     width: 120px;
     margin: 10px;
     text-align: center;
-    position: static;
-    overflow: hidden;
 }
 
 .pokemon-item img {
@@ -84,34 +82,59 @@ button:disabled {
 }
 
 #selected-team {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     margin-top: 20px;
 }
 
 .pokemon-display {
-    width: 200px;
-    margin: 20px auto;
+    text-align: center;
 }
+
+.health-bar {
+    width: 100%;
+    background-color: #ccc;
+    border: 1px solid #000;
+    margin-top: 5px;
+}
+
+.health-bar div {
+    height: 10px;
+    background-color: #4caf50;
+}
+
+.pokemon-team {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    margin-top: 20px;
+}
+
+.pokemon-team .pokemon-item {
+    width: auto;
+}
+
+.battle-log {
+    height: 150px;
+    overflow-y: scroll;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+#enemy-pokemon, #player-pokemon {
+    margin: 10px 0;
+}
+
 .pokemon-display img {
     width: 150px;
     height: 150px;
 }
 
-
-.battle-log {
-    margin: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    height: 200px;
-    overflow-y: auto;
-    background-color: #f9f9f9;
-}
-
-.move-buttons {
+.pokemon-team {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    flex-wrap: nowrap;
     margin-top: 20px;
-}
-
-.move-buttons button {
-    margin: 0 10px;
 }
