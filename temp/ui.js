@@ -172,6 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             enemyAttack(playerPokemon, enemyPokemon, nextTurn);
                         } else {
                             enemyIndex++;
+                            if (enemyIndex >= enemyTeam.length) {
+                                battleLog.innerHTML += `<p>¡Has ganado la batalla!</p>`;
+                                return;
+                            }
                             nextTurn();
                         }
                     });
@@ -181,11 +185,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             playerAttack(move, playerPokemon, enemyPokemon, () => {
                                 if (enemyPokemon.isFainted()) {
                                     enemyIndex++;
+                                    if (enemyIndex >= enemyTeam.length) {
+                                        battleLog.innerHTML += `<p>¡Has ganado la batalla!</p>`;
+                                        return;
+                                    }
                                 }
                                 nextTurn();
                             });
                         } else {
                             playerIndex++;
+                            if (playerIndex >= selectedTeam.length) {
+                                battleLog.innerHTML += `<p>Has perdido la batalla.</p>`;
+                                return;
+                            }
                             nextTurn();
                         }
                     });
@@ -226,39 +238,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playerAttack(move, playerPokemon, enemyPokemon, callback) {
-        const damage = playerPokemon.calculateDamage(move, enemyPokemon);
+        const effectiveness = playerPokemon.getEffectiveness(move.type, enemyPokemon.type);
+        const damage = playerPokemon.calculateDamage(move, enemyPokemon) * effectiveness;
         enemyPokemon.takeDamage(damage);
-        battleLog.innerHTML += `<p>${playerPokemon.name} usa ${move.name} y causa ${damage} de daño a ${enemyPokemon.name}</p>`;
+
+        let effectivenessMessage = '';
+        if (effectiveness > 1) {
+            effectivenessMessage = '¡Es súper efectivo!';
+        } else if (effectiveness < 1) {
+            effectivenessMessage = 'No es muy efectivo...';
+        }
+
+        battleLog.innerHTML += `<p>${playerPokemon.name} usa ${move.name} y causa ${damage} de daño a ${enemyPokemon.name}. ${effectivenessMessage}</p>`;
         updateHealthBars();
 
         if (enemyPokemon.isFainted()) {
             battleLog.innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
         }
-        if (callback) callback();
-    }
 
-    function playerAttack(move, playerPokemon, enemyPokemon, callback) {
-        const damage = playerPokemon.calculateDamage(move, enemyPokemon);
-        enemyPokemon.takeDamage(damage);
-        battleLog.innerHTML += `<p>${playerPokemon.name} usa ${move.name} y causa ${damage} de daño a ${enemyPokemon.name}</p>`;
-        updateHealthBars();
-
-        if (enemyPokemon.isFainted()) {
-            battleLog.innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
-        }
         if (callback) callback();
     }
 
     function enemyAttack(playerPokemon, enemyPokemon, callback) {
         const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-        const enemyDamage = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+        const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
+        const enemyDamage = enemyPokemon.calculateDamage(enemyMove, playerPokemon) * effectiveness;
         playerPokemon.takeDamage(enemyDamage);
-        battleLog.innerHTML += `<p>${enemyPokemon.name} usa ${enemyMove.name} y causa ${enemyDamage} de daño a ${playerPokemon.name}</p>`;
+
+        let effectivenessMessage = '';
+        if (effectiveness > 1) {
+            effectivenessMessage = '¡Es súper efectivo!';
+        } else if (effectiveness < 1) {
+            effectivenessMessage = 'No es muy efectivo...';
+        }
+
+        battleLog.innerHTML += `<p>${enemyPokemon.name} usa ${enemyMove.name} y causa ${enemyDamage} de daño a ${playerPokemon.name}. ${effectivenessMessage}</p>`;
         updateHealthBars();
 
         if (playerPokemon.isFainted()) {
             battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
         }
+
         if (callback) callback();
     }
 
@@ -267,39 +287,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return shuffled.slice(0, 6);
     }
 
-    // Start the game
-    startButton.addEventListener('click', () => {
-        startScreen.classList.remove('active');
-        teamSelectionScreen.classList.add('active');
-        loadPokemonData();
-    });
-
-    // Confirm team selection
-    confirmTeamButton.addEventListener('click', () => {
-        if (selectedTeam.length === maxTeamSize) {
-            teamSelectionScreen.classList.remove('active');
-            battleScreen.classList.add('active');
-            startBattle();
-        } else {
-            alert("Debes seleccionar 6 Pokémon.");
-        }
-    });
-
     function startBattle() {
         enemyTeam = generateRandomTeam();
         playerIndex = 0;
         enemyIndex = 0;
         playerTurn = true;
+        gameEnded = false;
         nextTurn();
     }
 
     function nextTurn() {
+        if (gameEnded) return;
+
         if (playerIndex >= selectedTeam.length) {
             battleLog.innerHTML += `<p>Has perdido la batalla.</p>`;
+            gameEnded = true;
             return;
         }
         if (enemyIndex >= enemyTeam.length) {
             battleLog.innerHTML += `<p>¡Has ganado la batalla!</p>`;
+            gameEnded = true;
             return;
         }
 

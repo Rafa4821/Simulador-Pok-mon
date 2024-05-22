@@ -3,7 +3,7 @@ class Move {
         this.name = name;
         this.type = type;
         this.power = power;
-        this.category = category; // "Physical" o "Special"
+        this.category = category;
     }
 }
 
@@ -18,7 +18,7 @@ class Pokemon {
         this.spDefense = spDefense;
         this.speed = speed;
         this.moves = moves.map(move => new Move(move.name, move.type, move.power, move.category));
-        this.currentHP = hp; // HP actual durante la batalla
+        this.currentHP = hp;
     }
 
     takeDamage(damage) {
@@ -33,9 +33,9 @@ class Pokemon {
     }
 
     calculateDamage(move, opponent) {
-        const effectiveness = this.getEffectiveness(move.type, opponent.type);
         const attackStat = move.category === "Physical" ? this.attack : this.spAttack;
         const defenseStat = move.category === "Physical" ? opponent.defense : opponent.spDefense;
+        const effectiveness = this.getEffectiveness(move.type, opponent.type);
         return Math.floor((move.power * (attackStat / defenseStat)) * effectiveness);
     }
 
@@ -71,6 +71,7 @@ class Pokemon {
         return effectiveness;
     }
 }
+
 
 let playerTeam = [];
 let enemyTeam = [];
