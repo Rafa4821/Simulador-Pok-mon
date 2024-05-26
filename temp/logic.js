@@ -1,9 +1,10 @@
 class Move {
-    constructor(name, type, power, category) {
+    constructor(name, type, power, category, accuracy) {
         this.name = name;
         this.type = type;
         this.power = power;
-        this.category = category;
+        this.category = category; // "Physical" o "Special"
+        this.accuracy = accuracy; // Probabilidad de acertar
     }
 }
 
@@ -18,7 +19,7 @@ class Pokemon {
         this.spDefense = spDefense;
         this.speed = speed;
         this.moves = moves.map(move => new Move(move.name, move.type, move.power, move.category));
-        this.currentHP = hp;
+        this.currentHP = hp; // HP actual durante la batalla
     }
 
     takeDamage(damage) {
@@ -33,32 +34,53 @@ class Pokemon {
     }
 
     calculateDamage(move, opponent) {
-        const attackStat = move.category === "Physical" ? this.attack : this.spAttack;
-        const defenseStat = move.category === "Physical" ? opponent.defense : opponent.spDefense;
+        const accuracyCheck = Math.random() * 100;
+        if (accuracyCheck > move.accuracy) {
+            return { damage: 0, hit: false, message: `${this.name} usa ${move.name} pero falla.` }; // El ataque falla
+        }
+    
         const effectiveness = this.getEffectiveness(move.type, opponent.type);
-        return Math.floor((move.power * (attackStat / defenseStat)) * effectiveness);
+        let damage;
+        if (move.category === "Physical") {
+            if (this.attack === undefined || opponent.defense === undefined) {
+                console.error("Valores de ataque o defensa indefinidos", this, opponent);
+                return { damage: 0, hit: false, message: `Error en los valores de ataque o defensa` };
+            }
+            damage = Math.floor((move.power * (this.attack / opponent.defense)) * effectiveness);
+        } else if (move.category === "Special") {
+            if (this.spAttack === undefined || opponent.spDefense === undefined) {
+                console.error("Valores de ataque especial o defensa especial indefinidos", this, opponent);
+                return { damage: 0, hit: false, message: `Error en los valores de ataque especial o defensa especial` };
+            }
+            damage = Math.floor((move.power * (this.spAttack / opponent.spDefense)) * effectiveness);
+        } else {
+            damage = 0; // Si el movimiento no tiene una categoría definida, no hace daño
+        }
+    
+        return { damage: damage, hit: true, message: `${this.name} usa ${move.name} y causa ${damage} de daño a ${opponent.name}` };
     }
+    
 
     getEffectiveness(moveType, opponentTypes) {
         const typeChart = {
-            normal: { rock: 0.5, ghost: 0, steel: 0.5 },
-            fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
-            water: { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 },
-            electric: { water: 2, electric: 0.5, grass: 0.5, ground: 0, flying: 2, dragon: 0.5 },
-            grass: { fire: 0.5, water: 2, grass: 0.5, poison: 0.5, ground: 2, flying: 0.5, bug: 0.5, rock: 2, dragon: 0.5, steel: 0.5 },
-            ice: { fire: 0.5, water: 0.5, grass: 2, ice: 0.5, ground: 2, flying: 2, dragon: 2, steel: 0.5 },
-            fighting: { normal: 2, ice: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, rock: 2, ghost: 0, dark: 2, steel: 2, fairy: 0.5 },
-            poison: { grass: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0, fairy: 2 },
-            ground: { fire: 2, electric: 2, grass: 0.5, poison: 2, flying: 0, bug: 0.5, rock: 2, steel: 2 },
-            flying: { electric: 0.5, grass: 2, fighting: 2, bug: 2, rock: 0.5, steel: 0.5 },
-            psychic: { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 },
-            bug: { fire: 0.5, grass: 2, fighting: 0.5, poison: 0.5, flying: 0.5, psychic: 2, ghost: 0.5, dark: 2, steel: 0.5, fairy: 0.5 },
-            rock: { fire: 2, ice: 2, fighting: 0.5, ground: 0.5, flying: 2, bug: 2, steel: 0.5 },
-            ghost: { normal: 0, psychic: 2, ghost: 2, dark: 0.5 },
-            dragon: { dragon: 2, steel: 0.5, fairy: 0 },
-            dark: { fighting: 0.5, psychic: 2, ghost: 2, dark: 0.5, fairy: 0.5 },
-            steel: { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 },
-            fairy: { fighting: 2, poison: 0.5, steel: 0.5, fire: 0.5, dragon: 2, dark: 2 }
+            Normal: { Rock: 0.5, Ghost: 0, Steel: 0.5 },
+            Fire: { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 2, Bug: 2, Rock: 0.5, Dragon: 0.5, Steel: 2 },
+            Water: { Fire: 2, Water: 0.5, Grass: 0.5, Ground: 2, Rock: 2, Dragon: 0.5 },
+            Electric: { Water: 2, Electric: 0.5, Grass: 0.5, Ground: 0, Flying: 2, Dragon: 0.5 },
+            Grass: { Fire: 0.5, Water: 2, Grass: 0.5, Poison: 0.5, Ground: 2, Flying: 0.5, Bug: 0.5, Rock: 2, Dragon: 0.5, Steel: 0.5 },
+            Ice: { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 0.5, Ground: 2, Flying: 2, Dragon: 2, Steel: 0.5 },
+            Fighting: { Normal: 2, Ice: 2, Poison: 0.5, Flying: 0.5, Psychic: 0.5, Bug: 0.5, Rock: 2, Ghost: 0, Dark: 2, Steel: 2, Fairy: 0.5 },
+            Poison: { Grass: 2, Poison: 0.5, Ground: 0.5, Rock: 0.5, Ghost: 0.5, Steel: 0, Fairy: 2 },
+            Ground: { Fire: 2, Electric: 2, Grass: 0.5, Poison: 2, Flying: 0, Bug: 0.5, Rock: 2, Steel: 2 },
+            Flying: { Electric: 0.5, Grass: 2, Fighting: 2, Bug: 2, Rock: 0.5, Steel: 0.5 },
+            Psychic: { Fighting: 2, Poison: 2, Psychic: 0.5, Dark: 0, Steel: 0.5 },
+            Bug: { Fire: 0.5, Grass: 2, Fighting: 0.5, Poison: 0.5, Flying: 0.5, Psychic: 2, Ghost: 0.5, Dark: 2, Steel: 0.5, Fairy: 0.5 },
+            Rock: { Fire: 2, Ice: 2, Fighting: 0.5, Ground: 0.5, Flying: 2, Bug: 2, Steel: 0.5 },
+            Ghost: { Normal: 0, Psychic: 2, Ghost: 2, Dark: 0.5 },
+            Dragon: { Dragon: 2, Steel: 0.5, Fairy: 0 },
+            Dark: { Fighting: 0.5, Psychic: 2, Ghost: 2, Dark: 0.5, Fairy: 0.5 },
+            Steel: { Fire: 0.5, Water: 0.5, Electric: 0.5, Ice: 2, Rock: 2, Steel: 0.5, Fairy: 2 },
+            Fairy: { Fighting: 2, Poison: 0.5, Steel: 0.5, Fire: 0.5, Dragon: 2, Dark: 2 }
         };
 
         let effectiveness = 1;
@@ -72,13 +94,12 @@ class Pokemon {
     }
 }
 
-
 let playerTeam = [];
 let enemyTeam = [];
 let allPokemonData = [];
 
 async function loadPokemonData() {
-    const response = await fetch('temp/pokemonData.json');
+    const response = await fetch("temp/pokemonData.json"); // Cambia la ruta según la ubicación del archivo JSON
     const data = await response.json();
     return data;
 }
@@ -93,7 +114,7 @@ function initializePokemon(data) {
         pokemonData.spAttack,
         pokemonData.spDefense,
         pokemonData.speed,
-        pokemonData.moves
+        pokemonData.moves.map(move => new Move(move.name, move.type, move.power, move.category, move.accuracy))
     ));
 }
 
@@ -102,37 +123,31 @@ function generateRandomTeam() {
     return shuffled.slice(0, 6);
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener("DOMContentLoaded", async function() {
     allPokemonData = await loadPokemonData();
     allPokemonData = initializePokemon(allPokemonData);
 
-    document.getElementById('start-button').addEventListener('click', () => {
-        document.getElementById('start-screen').classList.remove('active');
-        document.getElementById('team-selection-screen').classList.add('active');
-        displayPokemonOptions();
-    });
-
-    document.getElementById('confirm-team-button').addEventListener('click', () => {
-        if (playerTeam.length === 6) {
-            enemyTeam = generateRandomTeam();
-            document.getElementById('team-selection-screen').classList.remove('active');
-            document.getElementById('battle-screen').classList.add('active');
-            startBattle();
-        } else {
-            alert('Selecciona 6 Pokémon para tu equipo.');
-        }
-    });
+    const startButton = document.getElementById("start-button");
+    if (startButton) {
+        startButton.addEventListener("click", function() {
+            document.getElementById("start-screen").classList.remove("active");
+            document.getElementById("team-selection-screen").classList.add("active");
+            loadPokemonData();
+        });
+    } else {
+        console.error("El elemento start-button no existe o no se ha cargado aún");
+    }
 });
 
 function displayPokemonOptions() {
-    const pokemonList = document.getElementById('available-pokemon');
-    pokemonList.innerHTML = '';
+    const pokemonList = document.getElementById("pokemon-list");
+    pokemonList.innerHTML = "";
 
-    allPokemonData.forEach((pokemon, index) => {
-        const btn = document.createElement('button');
-        btn.classList.add('pokemon-list-item');
+    allPokemonData.forEach(function(pokemon, index) {
+        const btn = document.createElement("button");
+        btn.classList.add("pokemon-list-item");
         btn.textContent = pokemon.name;
-        btn.addEventListener('click', () => {
+        btn.addEventListener("click", function() {
             selectPokemon(index);
         });
         pokemonList.appendChild(btn);
@@ -142,20 +157,20 @@ function displayPokemonOptions() {
 function selectPokemon(index) {
     if (playerTeam.length < 6 && !playerTeam.includes(allPokemonData[index])) {
         playerTeam.push(allPokemonData[index]);
-        const selectedPokemon = document.querySelectorAll('.pokemon-list-item')[index];
-        selectedPokemon.classList.add('selected');
+        const selectedPokemon = document.querySelectorAll(".pokemon-list-item")[index];
+        selectedPokemon.classList.add("selected");
 
         if (playerTeam.length === 6) {
-            document.getElementById('confirm-team-button').disabled = false;
+            document.getElementById("fight-btn").style.display = "block";
         }
     } else {
-        alert('Ya tienes 6 Pokémon en tu equipo o este Pokémon ya está seleccionado.');
+        alert("Ya tienes 6 Pokémon en tu equipo o este Pokémon ya está seleccionado.");
     }
 }
 
 function startBattle() {
-    console.log('La batalla ha comenzado');
-    
+    console.log("La batalla ha comenzado");
+
     let playerIndex = 0;
     let enemyIndex = 0;
 
@@ -164,74 +179,53 @@ function startBattle() {
         const enemyPokemon = enemyTeam[enemyIndex];
 
         // Mostrar los Pokémon que están luchando actualmente
-        document.getElementById('player-pokemon').innerHTML = `<img src="images/${playerPokemon.name.toLowerCase()}.png" alt="${playerPokemon.name}" style="width: 150px; height: 150px;"><p>${playerPokemon.name}</p>`;
-        document.getElementById('enemy-pokemon').innerHTML = `<img src="images/${enemyPokemon.name.toLowerCase()}.png" alt="${enemyPokemon.name}" style="width: 150px; height: 150px;"><p>${enemyPokemon.name}</p>`;
+        document.getElementById("player-pokemon").textContent = playerPokemon.name;
+        document.getElementById("enemy-pokemon").textContent = enemyPokemon.name;
 
-        // Limpiar los botones de movimientos anteriores
-        document.getElementById('move-buttons').innerHTML = '';
-        document.getElementById('battle-log').innerHTML += `<p>${playerPokemon.name} vs ${enemyPokemon.name}</p>`;
-                // Limpiar los botones de movimientos anteriores
-                document.getElementById('move-buttons').innerHTML = '';
-                document.getElementById('battle-log').innerHTML += `<p>${playerPokemon.name} vs ${enemyPokemon.name}</p>`;
-        
-                // Crear botones de movimientos para el Pokémon del jugador
-                playerPokemon.moves.forEach((move, index) => {
-                    const btn = document.createElement('button');
-                    btn.textContent = move.name;
-                    btn.addEventListener('click', () => {
-                        console.log(`Botón de movimiento ${move.name} presionado`);
-                        // Decidir quién ataca primero en función de la velocidad
-                        if (playerPokemon.speed >= enemyPokemon.speed) {
-                            playerAttack(move, playerPokemon, enemyPokemon, () => {
-                                if (!enemyPokemon.isFainted()) {
-                                    enemyAttack(playerPokemon, enemyPokemon, nextTurn);
-                                }
-                            });
-                        } else {
-                            enemyAttack(playerPokemon, enemyPokemon, () => {
-                                if (!playerPokemon.isFainted()) {
-                                    playerAttack(move, playerPokemon, enemyPokemon, nextTurn);
-                                }
-                            });
-                        }
-                    });
-                    document.getElementById('move-buttons').appendChild(btn);
-                });
-            }
-        
-            function playerAttack(move, playerPokemon, enemyPokemon, callback) {
+        // Implementar un sistema de turnos basado en la velocidad de los Pokémon
+        const playerGoesFirst = playerPokemon.speed >= enemyPokemon.speed;
+
+        // Permitir que el jugador elija un movimiento para su Pokémon
+        document.getElementById("move-btns").innerHTML = "";
+        playerPokemon.moves.forEach(function(move, index) {
+            const btn = document.createElement("button");
+            btn.textContent = move.name;
+            btn.addEventListener("click", function() {
+                // Calcular el daño basado en el movimiento elegido y aplicarlo al Pokémon oponente
                 const damage = playerPokemon.calculateDamage(move, enemyPokemon);
                 enemyPokemon.takeDamage(damage);
-                document.getElementById('battle-log').innerHTML += `<p>${playerPokemon.name} usa ${move.name} y causa ${damage} de daño a ${enemyPokemon.name}</p>`;
-        
-                if (enemyPokemon.isFainted()) {
-                    document.getElementById('battle-log').innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
-                    enemyIndex++;
-                    if (enemyIndex >= enemyTeam.length) {
-                        document.getElementById('battle-log').innerHTML += `<p>¡Has ganado la batalla!</p>`;
-                        return;
+
+                // Comprobar si el Pokémon enemigo ha desmayado
+                                if (enemyPokemon.isFainted()) {
+                                    enemyIndex++;
+                                    if (enemyIndex >= enemyTeam.length) {
+                                        alert("¡Has ganado la batalla!");
+                                        return;
+                                    }
+                                }
+                
+                                // El turno del enemigo
+                                const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
+                                const enemyDamage = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+                                playerPokemon.takeDamage(enemyDamage);
+                
+                                // Comprobar si el Pokémon del jugador ha desmayado
+                                if (playerPokemon.isFainted()) {
+                                    playerIndex++;
+                                    if (playerIndex >= playerTeam.length) {
+                                        alert("Has perdido la batalla.");
+                                        return;
+                                    }
+                                }
+                
+                                // Siguiente turno
+                                nextTurn();
+                            });
+                
+                            document.getElementById("move-btns").appendChild(btn);
+                        });
                     }
+                
+                    nextTurn();
                 }
-                if (callback) callback();
-            }
-        
-            function enemyAttack(playerPokemon, enemyPokemon, callback) {
-                const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-                const enemyDamage = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
-                playerPokemon.takeDamage(enemyDamage);
-                document.getElementById('battle-log').innerHTML += `<p>${enemyPokemon.name} usa ${enemyMove.name} y causa ${enemyDamage} de daño a ${playerPokemon.name}</p>`;
-        
-                if (playerPokemon.isFainted()) {
-                    document.getElementById('battle-log').innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
-                    playerIndex++;
-                    if (playerIndex >= selectedTeam.length) {
-                        document.getElementById('battle-log').innerHTML += `<p>Has perdido la batalla.</p>`;
-                        return;
-                    }
-                }
-                if (callback) callback();
-            }
-        
-            nextTurn();
-        }
-        
+                

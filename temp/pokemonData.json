@@ -9,10 +9,10 @@
         "spDefense": 175,
         "speed": 205,
         "moves": [
-            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special"},
-            {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical"},
-            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical"},
-            {"name": "Heat Wave", "type": "Fire", "power": 95, "category": "Special"}
+            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical", "accuracy": 95},
+            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Heat Wave", "type": "Fire", "power": 95, "category": "Special", "accuracy": 90}
         ]
     },
     {
@@ -25,10 +25,10 @@
         "spDefense": 171,
         "speed": 161,
         "moves": [
-            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical"},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical"},
-            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"}
+            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical", "accuracy": 95},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -41,10 +41,10 @@
         "spDefense": 205,
         "speed": 165,
         "moves": [
-            {"name": "Solar Beam", "type": "Grass", "power": 120, "category": "Special"},
-            {"name": "Sludge Bomb", "type": "Poison", "power": 90, "category": "Special"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "Sleep Powder", "type": "Grass", "power": 0, "category": "Status"}
+            {"name": "Solar Beam", "type": "Grass", "power": 120, "category": "Special", "accuracy": 100},
+            {"name": "Sludge Bomb", "type": "Poison", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -57,10 +57,10 @@
         "spDefense": 145,
         "speed": 165,
         "moves": [
-            {"name": "Blaze Kick", "type": "Fire", "power": 85, "category": "Physical"},
-            {"name": "Sky Uppercut", "type": "Fighting", "power": 85, "category": "Physical"},
-            {"name": "Flare Blitz", "type": "Fire", "power": 120, "category": "Physical"},
-            {"name": "Brave Bird", "type": "Flying", "power": 120, "category": "Physical"}
+            {"name": "Blaze Kick", "type": "Fire", "power": 85, "category": "Physical", "accuracy": 90},
+            {"name": "Sky Uppercut", "type": "Fighting", "power": 85, "category": "Physical", "accuracy": 90},
+            {"name": "Flare Blitz", "type": "Fire", "power": 120, "category": "Physical", "accuracy": 100},
+            {"name": "Brave Bird", "type": "Flying", "power": 120, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -73,10 +73,10 @@
         "spDefense": 205,
         "speed": 137,
         "moves": [
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical"},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special"}
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -89,10 +89,10 @@
         "spDefense": 165,
         "speed": 245,
         "moves": [
-            {"name": "Leaf Blade", "type": "Grass", "power": 90, "category": "Physical"},
-            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "X-Scissor", "type": "Bug", "power": 80, "category": "Physical"}
+            {"name": "Leaf Blade", "type": "Grass", "power": 90, "category": "Physical", "accuracy": 100},
+            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "X-Scissor", "type": "Bug", "power": 80, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -105,10 +105,10 @@
         "spDefense": 135,
         "speed": 105,
         "moves": [
-            {"name": "Iron Tail", "type": "Steel", "power": 100, "category": "Physical"},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical"}
+            {"name": "Iron Tail", "type": "Steel", "power": 100, "category": "Physical", "accuracy": 75},
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -121,10 +121,10 @@
         "spDefense": 170,
         "speed": 240,
         "moves": [
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special"},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special"},
-            {"name": "Aura Sphere", "type": "Fighting", "power": 80, "category": "Special"},
-            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special"}
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Aura Sphere", "type": "Fighting", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -137,10 +137,10 @@
         "spDefense": 205,
         "speed": 175,
         "moves": [
-            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical"},
-            {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical"},
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"}
+            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical", "accuracy": 95},
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -153,10 +153,10 @@
         "spDefense": 197,
         "speed": 167,
         "moves": [
-            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical"},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical"}
+            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical", "accuracy": 95}
         ]
     },
     {
@@ -169,10 +169,10 @@
         "spDefense": 205,
         "speed": 135,
         "moves": [
-            {"name": "Surf", "type": "Water", "power": 90, "category": "Special"},
-            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special"},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special"},
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special"}
+            {"name": "Surf", "type": "Water", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -185,10 +185,10 @@
         "spDefense": 165,
         "speed": 295,
         "moves": [
-            {"name": "Night Slash", "type": "Dark", "power": 70, "category": "Physical"},
-            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical"},
-            {"name": "Brick Break", "type": "Fighting", "power": 75, "category": "Physical"},
-            {"name": "Poison Jab", "type": "Poison", "power": 80, "category": "Physical"}
+            {"name": "Night Slash", "type": "Dark", "power": 70, "category": "Physical", "accuracy": 100},
+            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Brick Break", "type": "Fighting", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Poison Jab", "type": "Poison", "power": 80, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -201,10 +201,10 @@
         "spDefense": 195,
         "speed": 245,
         "moves": [
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special"},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special"},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special"},
-            {"name": "Energy Ball", "type": "Grass", "power": 90, "category": "Special"}
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
+            {"name": "Energy Ball", "type": "Grass", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -217,10 +217,10 @@
         "spDefense": 195,
         "speed": 185,
         "moves": [
-            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special"},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special"},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special"},
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special"}
+            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -233,10 +233,10 @@
         "spDefense": 175,
         "speed": 205,
         "moves": [
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical"},
-            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical"}
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -249,10 +249,10 @@
         "spDefense": 195,
         "speed": 215,
         "moves": [
-            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical"},
-            {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "Fire Fang", "type": "Fire", "power": 65, "category": "Physical"}
+            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical", "accuracy": 95},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Fire Fang", "type": "Fire", "power": 65, "category": "Physical", "accuracy": 95}
         ]
     },
     {
@@ -265,10 +265,10 @@
         "spDefense": 255,
         "speed": 195,
         "moves": [
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special"},
-            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special"},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special"},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special"}
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special", "accuracy": 100},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -281,10 +281,10 @@
         "spDefense": 255,
         "speed": 135,
         "moves": [
-            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special"},
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special"},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special"},
-            {"name": "Hyper Voice", "type": "Normal", "power": 90, "category": "Special"}
+            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special", "accuracy": 100},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Hyper Voice", "type": "Normal", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -297,10 +297,10 @@
         "spDefense": 175,
         "speed": 135,
         "moves": [
-            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical"},
-            {"name": "Play Rough", "type": "Fairy", "power": 90, "category": "Physical"},
-            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical"},
-            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical"}
+            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Play Rough", "type": "Fairy", "power": 90, "category": "Physical", "accuracy": 90},
+            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -313,10 +313,10 @@
         "spDefense": 195,
         "speed": 195,
         "moves": [
-            {"name": "Shadow Claw", "type": "Ghost", "power": 70, "category": "Physical"},
-            {"name": "Play Rough", "type": "Fairy", "power": 90, "category": "Physical"},
-            {"name": "Shadow Sneak", "type": "Ghost", "power": 40, "category": "Physical"},
-            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical"}
+            {"name": "Shadow Claw", "type": "Ghost", "power": 70, "category": "Physical", "accuracy": 100},
+            {"name": "Play Rough", "type": "Fairy", "power": 90, "category": "Physical", "accuracy": 90},
+            {"name": "Shadow Sneak", "type": "Ghost", "power": 40, "category": "Physical", "accuracy": 100},
+            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -329,10 +329,10 @@
         "spDefense": 195,
         "speed": 195,
         "moves": [
-            {"name": "Hydro Pump", "type": "Water", "power": 110, "category": "Special"},
-            {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special"},
-            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special"},
-            {"name": "Surf", "type": "Water", "power": 90, "category": "Special"}
+            {"name": "Hydro Pump", "type": "Water", "power": 110, "category": "Special", "accuracy": 80},
+            {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special", "accuracy": 100},
+            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Surf", "type": "Water", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -345,10 +345,10 @@
         "spDefense": 195,
         "speed": 195,
         "moves": [
-            {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special"},
-            {"name": "Dark Pulse", "type": "Dark", "power": 80, "category": "Special"},
-            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special"},
-            {"name": "Earth Power", "type": "Ground", "power": 90, "category": "Special"}
+            {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special", "accuracy": 100},
+            {"name": "Dark Pulse", "type": "Dark", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Earth Power", "type": "Ground", "power": 90, "category": "Special", "accuracy": 100}
         ]
     },
     {
@@ -361,10 +361,10 @@
         "spDefense": 185,
         "speed": 195,
         "moves": [
-            {"name": "Dragon Ascent", "type": "Flying", "power": 120, "category": "Physical"},
-            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical"},
-            {"name": "Extreme Speed", "type": "Normal", "power": 80, "category": "Physical"},
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"}
+            {"name": "Dragon Ascent", "type": "Flying", "power": 120, "category": "Physical", "accuracy": 100},
+            {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Extreme Speed", "type": "Normal", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100}
         ]
     },
     {
@@ -377,10 +377,10 @@
         "spDefense": 155,
         "speed": 135,
         "moves": [
-            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical"},
-            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical"},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical"},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical"}
+            {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical", "accuracy": 100},
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100}
         ]
     }
 ]
