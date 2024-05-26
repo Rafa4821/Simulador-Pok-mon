@@ -18,7 +18,7 @@ class Pokemon {
         this.spAttack = spAttack;
         this.spDefense = spDefense;
         this.speed = speed;
-        this.moves = moves.map(move => new Move(move.name, move.type, move.power, move.category));
+        this.moves = moves.map(move => new Move(move.name, move.type, move.power, move.category, move.accuracy));
         this.currentHP = hp; // HP actual durante la batalla
     }
 
@@ -38,28 +38,27 @@ class Pokemon {
         if (accuracyCheck > move.accuracy) {
             return { damage: 0, hit: false, message: `${this.name} usa ${move.name} pero falla.` }; // El ataque falla
         }
-    
+
         const effectiveness = this.getEffectiveness(move.type, opponent.type);
         let damage;
         if (move.category === "Physical") {
-            if (this.attack === undefined || opponent.defense === undefined) {
-                console.error("Valores de ataque o defensa indefinidos", this, opponent);
-                return { damage: 0, hit: false, message: `Error en los valores de ataque o defensa` };
+            if (typeof this.attack !== 'number' || typeof opponent.defense !== 'number' || typeof move.power !== 'number') {
+                console.error("Valores de ataque, defensa o poder del movimiento no son números", this, opponent);
+                return { damage: 0, hit: false, message: `Error en los valores de ataque, defensa o poder del movimiento` };
             }
             damage = Math.floor((move.power * (this.attack / opponent.defense)) * effectiveness);
         } else if (move.category === "Special") {
-            if (this.spAttack === undefined || opponent.spDefense === undefined) {
-                console.error("Valores de ataque especial o defensa especial indefinidos", this, opponent);
-                return { damage: 0, hit: false, message: `Error en los valores de ataque especial o defensa especial` };
+            if (typeof this.spAttack !== 'number' || typeof opponent.spDefense !== 'number' || typeof move.power !== 'number') {
+                console.error("Valores de ataque especial, defensa especial o poder del movimiento no son números", this, opponent);
+                return { damage: 0, hit: false, message: `Error en los valores de ataque especial, defensa especial o poder del movimiento` };
             }
             damage = Math.floor((move.power * (this.spAttack / opponent.spDefense)) * effectiveness);
         } else {
             damage = 0; // Si el movimiento no tiene una categoría definida, no hace daño
         }
-    
+
         return { damage: damage, hit: true, message: `${this.name} usa ${move.name} y causa ${damage} de daño a ${opponent.name}` };
     }
-    
 
     getEffectiveness(moveType, opponentTypes) {
         const typeChart = {
@@ -192,40 +191,59 @@ function startBattle() {
             btn.textContent = move.name;
             btn.addEventListener("click", function() {
                 // Calcular el daño basado en el movimiento elegido y aplicarlo al Pokémon oponente
-                const damage = playerPokemon.calculateDamage(move, enemyPokemon);
+                const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
                 enemyPokemon.takeDamage(damage);
-
-                // Comprobar si el Pokémon enemigo ha desmayado
-                                if (enemyPokemon.isFainted()) {
-                                    enemyIndex++;
-                                    if (enemyIndex >= enemyTeam.length) {
-                                        alert("¡Has ganado la batalla!");
-                                        return;
-                                    }
-                                }
-                
-                                // El turno del enemigo
-                                const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-                                const enemyDamage = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
-                                playerPokemon.takeDamage(enemyDamage);
-                
-                                // Comprobar si el Pokémon del jugador ha desmayado
-                                if (playerPokemon.isFainted()) {
-                                    playerIndex++;
-                                    if (playerIndex >= playerTeam.length) {
-                                        alert("Has perdido la batalla.");
-                                        return;
-                                    }
-                                }
-                
-                                // Siguiente turno
-                                nextTurn();
-                            });
-                
-                            document.getElementById("move-btns").appendChild(btn);
-                        });
+                battleLog.innerHTML += `<p>${message}</p>`;
+                if (hit) {
+                    const effectiveness = playerPokemon.getEffectiveness(move.type, enemyPokemon.type);
+                    let effectivenessMessage = "";
+                    if (effectiveness > 1) {
+                        effectivenessMessage = "¡Es súper efectivo!";
+                    } else if (effectiveness < 1) {
+                        effectivenessMessage = "No es muy efectivo...";
                     }
-                
-                    nextTurn();
+                    battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+                    if (enemyPokemon.isFainted()) {
+                        battleLog.innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
+                        enemyIndex++;
+                        if (enemyIndex >= enemyTeam.length) {
+                            battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
+                            return;
+                        }
+                    }
                 }
-                
+
+                // Turno del enemigo
+                const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
+                const { damage: enemyDamage, hit: enemyHit, message: enemyMessage } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+                playerPokemon.takeDamage(enemyDamage);
+                battleLog.innerHTML += `<p>${enemyMessage}</p>`;
+                if (enemyHit) {
+                    const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
+                    let effectivenessMessage = "";
+                    if (effectiveness > 1) {
+                        effectivenessMessage = "¡Es súper efectivo!";
+                    } else if (effectiveness < 1) {
+                        effectivenessMessage = "No es muy efectivo...";
+                    }
+                    battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+                    if (playerPokemon.isFainted()) {
+                        battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
+                        playerIndex++;
+                        if (playerIndex >= playerTeam.length) {
+                            battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
+                            return;
+                        }
+                    }
+                }
+
+                // Siguiente turno
+                nextTurn();
+            });
+
+            document.getElementById("move-btns").appendChild(btn);
+        });
+    }
+
+    nextTurn();
+}

@@ -174,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    
     function enemyAttack(playerPokemon, enemyPokemon, callback) {
         if (!playerPokemon || playerPokemon.currentHP === undefined) {
             console.error("El objeto playerPokemon o la propiedad currentHP no existen");
@@ -187,35 +186,35 @@ document.addEventListener("DOMContentLoaded", function() {
     
         const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
         const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
-        const enemyDamage = enemyPokemon.calculateDamage(enemyMove, playerPokemon) * effectiveness;
-        playerPokemon.takeDamage(enemyDamage);
+        const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+        
+        battleLog.innerHTML += `<p>${message}</p>`;
+        if (hit) {
+            playerPokemon.takeDamage(damage);
     
-        let effectivenessMessage = "";
-        if (effectiveness > 1) {
-            effectivenessMessage = "¡Es súper efectivo!";
-        } else if (effectiveness < 1) {
-            effectivenessMessage = "No es muy efectivo...";
-        }
+            let effectivenessMessage = "";
+            if (effectiveness > 1) {
+                effectivenessMessage = "¡Es súper efectivo!";
+            } else if (effectiveness < 1) {
+                effectivenessMessage = "No es muy efectivo...";
+            }
     
-        battleLog.innerHTML += "<p>" + enemyPokemon.name + " usa " + enemyMove.name + " y causa " + enemyDamage + " de daño a " + playerPokemon.name + ". " + effectivenessMessage + "</p>";
-        updateHealthBars();
-    
-        if (playerPokemon.isFainted()) {
-            battleLog.innerHTML += "<p>" + playerPokemon.name + " se ha debilitado</p>";
-            playerIndex++;
-            if (playerIndex >= selectedTeam.length) {
-                battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-                gameEnded = true;
-                return;
+            battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+            if (playerPokemon.isFainted()) {
+                battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
+                playerIndex++;
+                if (playerIndex >= selectedTeam.length) {
+                    battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
+                    gameEnded = true;
+                    return;
+                }
             }
         }
     
-        if (callback) {
-            callback();
-        }
+        updateHealthBars();
+        if (callback) callback();
     }
     
-
     function updateMoveButtons(playerPokemon, enemyPokemon) {
         moveButtons.innerHTML = "";
         playerPokemon.moves.forEach(function(move) {
@@ -266,7 +265,7 @@ document.addEventListener("DOMContentLoaded", function() {
             moveButtons.appendChild(btn);
         });
     }
-
+    
     function playerAttack(move, playerPokemon, enemyPokemon, callback) {
         const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
         battleLog.innerHTML += `<p>${message}</p>`;
@@ -295,206 +294,56 @@ document.addEventListener("DOMContentLoaded", function() {
         if (callback) callback();
     }
     
+    function generateRandomTeam() {
+        const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, 6);
+    }
     
-    function enemyAttack(playerPokemon, enemyPokemon, callback) {
-        const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-        const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
-        battleLog.innerHTML += `<p>${message}</p>`;
-        if (hit) {
-            playerPokemon.takeDamage(damage);
-            const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
-            let effectivenessMessage = "";
-            if (effectiveness > 1) {
-                effectivenessMessage = "¡Es súper efectivo!";
-            } else if (effectiveness < 1) {
-                effectivenessMessage = "No es muy efectivo...";
-            }
-            battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
-            if (playerPokemon.isFainted()) {
-                battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
-                playerIndex++;
-                if (playerIndex >= playerTeam.length) {
-                    battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-                    gameEnded = true;
-                    return;
-                }
-            }
+    function startBattle() {
+        enemyTeam = generateRandomTeam();
+        playerIndex = 0;
+        enemyIndex = 0;
+        playerTurn = true;
+        gameEnded = false;
+        nextTurn();
+    }
+    
+    function nextTurn() {
+        if (gameEnded) return;
+    
+        if (playerIndex >= selectedTeam.length) {
+            battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
+            gameEnded = true;
+            return;
+        }
+        if (enemyIndex >= enemyTeam.length) {
+            battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
+            gameEnded = true;
+            return;
         }
     
-        updateHealthBars();
-        if (callback) callback();
+        if (!playerTurn) {
+            const playerPokemon = selectedTeam[playerIndex];
+            const enemyPokemon = enemyTeam[enemyIndex];
+            enemyAttack(playerPokemon, enemyPokemon, function() {
+                playerTurn = true;
+                displayCurrentPokemon();
+            });
+        } else {
+            displayCurrentPokemon();
+        }
     }
 
-        function generateRandomTeam() {
-            const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 6);
-        }
-    
-        function startBattle() {
-            enemyTeam = generateRandomTeam();
-            playerIndex = 0;
-            enemyIndex = 0;
-            playerTurn = true;
-            gameEnded = false;
-            nextTurn();
-        }
-    
-        function nextTurn() {
-            if (gameEnded) return;
-
-            if (playerIndex >= selectedTeam.length) {
-                battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-                gameEnded = true;
-                return;
-            }
-            if (enemyIndex >= enemyTeam.length) {
-                battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
-                gameEnded = true;
-                return;
-            }
-
-            if (!playerTurn) {
-                const playerPokemon = selectedTeam[playerIndex];
-                const enemyPokemon = enemyTeam[enemyIndex];
-                enemyAttack(playerPokemon, enemyPokemon, function() {
-                    playerTurn = true;
-                    displayCurrentPokemon();
-                });
-            } else {
-                displayCurrentPokemon();
-            }
-        }
-
-        function updateMoveButtons(playerPokemon, enemyPokemon) {
-            moveButtons.innerHTML = "";
-            playerPokemon.moves.forEach(function(move) {
-                const btn = document.createElement("button");
-                btn.textContent = move.name;
-                btn.addEventListener("click", function() {
-                    console.log("Botón de movimiento " + move.name + " presionado");
-                    if (playerPokemon.speed >= enemyPokemon.speed) {
-                        playerAttack(move, playerPokemon, enemyPokemon, function() {
-                            if (!enemyPokemon.isFainted()) {
-                                enemyAttack(playerPokemon, enemyPokemon, nextTurn);
-                            } else {
-                                enemyIndex++;
-                                if (enemyIndex >= enemyTeam.length) {
-                                    battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
-                                    gameEnded = true;
-                                    return;
-                                }
-                                nextTurn();
-                            }
-                        });
-                    } else {
-                        enemyAttack(playerPokemon, enemyPokemon, function() {
-                            if (!playerPokemon.isFainted()) {
-                                playerAttack(move, playerPokemon, enemyPokemon, function() {
-                                    if (enemyPokemon.isFainted()) {
-                                        enemyIndex++;
-                                        if (enemyIndex >= enemyTeam.length) {
-                                            battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
-                                            gameEnded = true;
-                                            return;
-                                        }
-                                    }
-                                    nextTurn();
-                                });
-                            } else {
-                                playerIndex++;
-                                if (playerIndex >= selectedTeam.length) {
-                                    battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-                                    gameEnded = true;
-                                    return;
-                                }
-                                nextTurn();
-                            }
-                        });
-                    }
-                });
-                moveButtons.appendChild(btn);
-            });
-        }
-
-        function playerAttack(move, playerPokemon, enemyPokemon, callback) {
-            const effectiveness = playerPokemon.getEffectiveness(move.type, enemyPokemon.type);
-            const damage = playerPokemon.calculateDamage(move, enemyPokemon) * effectiveness;
-            enemyPokemon.takeDamage(damage);
-
-            let effectivenessMessage = "";
-            if (effectiveness > 1) {
-                effectivenessMessage = "¡Es súper efectivo!";
-            } else if (effectiveness < 1) {
-                effectivenessMessage = "No es muy efectivo...";
-            }
-
-            battleLog.innerHTML += "<p>" + playerPokemon.name + " usa " + move.name + " y causa " + damage + " de daño a " + enemyPokemon.name + ". " + effectivenessMessage + "</p>";
-            updateHealthBars();
-
-            if (enemyPokemon.isFainted()) {
-                battleLog.innerHTML += "<p>" + enemyPokemon.name + " se ha debilitado</p>";
-            }
-
-            if (callback) {
-                callback();
-            }
-        }
-
-        function enemyAttack(playerPokemon, enemyPokemon, callback) {
-            const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-            const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
-            const enemyDamage = enemyPokemon.calculateDamage(enemyMove, playerPokemon) * effectiveness;
-            playerPokemon.takeDamage(enemyDamage);
-
-            let effectivenessMessage = "";
-            if (effectiveness > 1) {
-                effectivenessMessage = "¡Es súper efectivo!";
-            } else if (effectiveness < 1) {
-                effectivenessMessage = "No es muy efectivo...";
-            }
-
-            battleLog.innerHTML += "<p>" + enemyPokemon.name + " usa " + enemyMove.name + " y causa " + enemyDamage + " de daño a " + playerPokemon.name + ". " + effectivenessMessage + "</p>";
-            updateHealthBars();
-
-            if (playerPokemon.isFainted()) {
-                battleLog.innerHTML += "<p>" + playerPokemon.name + " se ha debilitado</p>";
-                playerIndex++;
-                if (playerIndex >= selectedTeam.length) {
-                    battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-                    gameEnded = true;
-                    return;
-                }
-            }
-
-            if (callback) {
-                callback();
-            }
-        }
-
-        function generateRandomTeam() {
-            const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 6);
-        }
-
-        function startBattle() {
-            enemyTeam = generateRandomTeam();
-            playerIndex = 0;
-            enemyIndex = 0;
-            playerTurn = true;
-            gameEnded = false;
-            nextTurn();
-        }
-
-        startButton.addEventListener("click", function() {
-            startScreen.classList.remove("active");
-            teamSelectionScreen.classList.add("active");
-            loadPokemonData();
-        });
-
-        confirmTeamButton.addEventListener("click", function() {
-            teamSelectionScreen.classList.remove("active");
-            battleScreen.classList.add("active");
-            displayPlayerTeam();
-            startBattle();
-        });
+    startButton.addEventListener("click", function() {
+        startScreen.classList.remove("active");
+        teamSelectionScreen.classList.add("active");
+        loadPokemonData();
     });
+
+    confirmTeamButton.addEventListener("click", function() {
+        teamSelectionScreen.classList.remove("active");
+        battleScreen.classList.add("active");
+        displayPlayerTeam();
+        startBattle();
+    });
+});
