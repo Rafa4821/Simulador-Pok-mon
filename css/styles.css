@@ -1,3 +1,4 @@
+/* Estilos generales */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -5,6 +6,7 @@
     font-family: Arial, sans-serif;
 }
 
+/* Estilos del cuerpo de la página */
 body {
     display: flex;
     justify-content: center;
@@ -13,6 +15,7 @@ body {
     background-color: #f0f0f0;
 }
 
+/* Contenedor principal */
 .container {
     width: 100%;
     max-width: 1200px;
@@ -23,6 +26,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Pantallas del juego */
 .screen {
     display: none;
     text-align: center;
@@ -32,21 +36,31 @@ body {
     display: block;
 }
 
+/* Estilos generales de los botones */
 button {
     margin: 10px;
     padding: 10px 20px;
-    background-color: #007bff;
     color: white;
+    background-color: red; /* Color rojo */
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: bold; /* Asegura que el texto sea legible */
+    transition: background-color 0.3s; /* Transición para el hover */
 }
 
+/* Estilo de los botones al pasar el ratón */
+button:hover {
+    background-color: black; /* Color negro al pasar el ratón */
+}
+
+/* Estilo de los botones deshabilitados */
 button:disabled {
     background-color: #aaa;
     cursor: not-allowed;
 }
 
+/* Lista de Pokémon disponibles */
 .pokemon-list {
     display: flex;
     flex-wrap: wrap;
@@ -54,6 +68,7 @@ button:disabled {
     margin: 20px 0;
 }
 
+/* Elemento individual de la lista de Pokémon */
 .pokemon-item {
     width: 100px;
     margin: 10px;
@@ -62,12 +77,14 @@ button:disabled {
     overflow: hidden;
 }
 
+/* Imagen del Pokémon */
 .pokemon-item img {
     width: 100%;
     height: auto;
     border-radius: 5px;
 }
 
+/* Botón del Pokémon */
 .pokemon-item button {
     margin-top: 5px;
     width: 100%;
@@ -76,16 +93,20 @@ button:disabled {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    color: #000; /* Asegura que el texto sea legible en el fondo amarillo */
 }
 
+/* Botón del Pokémon seleccionado */
 .pokemon-item.selected button {
     background-color: #4caf50;
 }
 
+/* Contenedor del equipo seleccionado */
 #selected-team {
     margin-top: 20px;
 }
 
+/* Barra de salud */
 .health-bar {
     width: 100%;
     background-color: #ddd;
@@ -94,11 +115,13 @@ button:disabled {
     margin-top: 10px;
 }
 
+/* Barra de salud interna */
 .health-bar div {
     height: 20px;
     background-color: #4caf50;
 }
 
+/* Registro de la batalla */
 .battle-log {
     height: 150px;
     overflow-y: scroll;
@@ -108,15 +131,18 @@ button:disabled {
     text-align: left;
 }
 
+/* Pantallas de Pokémon */
 #enemy-pokemon, #player-pokemon {
     margin: 10px 0;
 }
 
+/* Imagen del Pokémon en batalla */
 .pokemon-display img {
     width: 100px;
     height: auto;
 }
 
+/* Equipo del jugador */
 .pokemon-team {
     display: flex;
     justify-content: space-around;
@@ -124,18 +150,53 @@ button:disabled {
     margin-top: 20px;
 }
 
+/* Botones de movimientos con colores según el tipo */
+.move-button {
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.move-button.Fire { background-color: #F08030; }
+.move-button.Water { background-color: #6890F0; }
+.move-button.Electric { background-color: #F8D030; }
+.move-button.Grass { background-color: #78C850; }
+.move-button.Ice { background-color: #98D8D8; }
+.move-button.Fighting { background-color: #C03028; }
+.move-button.Poison { background-color: #A040A0; }
+.move-button.Ground { background-color: #E0C068; }
+.move-button.Flying { background-color: #A890F0; }
+.move-button.Psychic { background-color: #F85888; }
+.move-button.Bug { background-color: #A8B820; }
+.move-button.Rock { background-color: #B8A038; }
+.move-button.Ghost { background-color: #705898; }
+.move-button.Dragon { background-color: #7038F8; }
+.move-button.Dark { background-color: #705848; }
+.move-button.Steel { background-color: #B8B8D0; }
+.move-button.Fairy { background-color: #EE99AC; }
+.move-button.Normal { background-color: #A8A878; }
+
+/* Media queries para dispositivos móviles */
 @media (max-width: 600px) {
-    .pokemon-list, .pokemon-team {
+    .pokemon-list {
         flex-direction: column;
         align-items: center;
     }
 
     .pokemon-item {
-        width: 80%;
+        width: 80%; /* Reduce el tamaño de las imágenes */
+    }
+
+    .pokemon-item img {
+        width: 50%; /* Ajusta el tamaño de las imágenes */
     }
 
     .pokemon-display img {
-        width: 80px;
+        width: 80px; /* Reduce el tamaño de las imágenes en la batalla */
     }
 
     .battle-log {

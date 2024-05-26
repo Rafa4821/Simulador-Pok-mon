@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // Referencias DOM
     const startButton = document.getElementById("start-button");
     const startScreen = document.getElementById("start-screen");
     const teamSelectionScreen = document.getElementById("team-selection-screen");
@@ -21,12 +22,35 @@ document.addEventListener("DOMContentLoaded", function() {
     let enemyTeam = [];
     let gameEnded = false;
 
+    const typeColors = {
+        Normal: "#A8A878",
+        Fire: "#F08030",
+        Water: "#6890F0",
+        Electric: "#F8D030",
+        Grass: "#78C850",
+        Ice: "#98D8D8",
+        Fighting: "#C03028",
+        Poison: "#A040A0",
+        Ground: "#E0C068",
+        Flying: "#A890F0",
+        Psychic: "#F85888",
+        Bug: "#A8B820",
+        Rock: "#B8A038",
+        Ghost: "#705898",
+        Dragon: "#7038F8",
+        Dark: "#705848",
+        Steel: "#B8B8D0",
+        Fairy: "#EE99AC"
+    };
+
+    // Inicia el juego y muestra la pantalla de selección de equipo
     startButton.addEventListener("click", function() {
         startScreen.classList.remove("active");
         teamSelectionScreen.classList.add("active");
         loadPokemonData();
     });
 
+    // Carga los datos de Pokémon desde un archivo JSON
     async function loadPokemonData() {
         const response = await fetch("temp/pokemonData.json");
         const pokemonData = await response.json();
@@ -46,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function() {
         displayAvailablePokemon(allPokemonData);
     }
 
+    // Muestra los Pokémon disponibles para seleccionar
     function displayAvailablePokemon(pokemonData) {
         availablePokemonContainer.innerHTML = "";
         pokemonData.forEach(function(pokemon) {
@@ -68,14 +93,20 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // Selecciona o deselecciona un Pokémon y lo agrega o quita del equipo del jugador
     function selectPokemon(pokemon, pokemonItem) {
-        if (selectedTeam.length < maxTeamSize && !selectedTeam.includes(pokemon)) {
+        const index = selectedTeam.indexOf(pokemon);
+        if (index !== -1) {
+            selectedTeam.splice(index, 1);
+            pokemonItem.classList.remove("selected");
+        } else if (selectedTeam.length < maxTeamSize) {
             selectedTeam.push(pokemon);
             pokemonItem.classList.add("selected");
-            updateSelectedTeam();
         }
+        updateSelectedTeam();
     }
 
+    // Actualiza la pantalla de equipo seleccionado
     function updateSelectedTeam() {
         selectedTeamContainer.innerHTML = "<h3>Equipo Seleccionado</h3>";
         selectedTeam.forEach(function(pokemon) {
@@ -97,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function() {
         confirmTeamButton.disabled = selectedTeam.length < maxTeamSize;
     }
 
+    // Confirma el equipo seleccionado y empieza la batalla
     confirmTeamButton.addEventListener("click", function() {
         teamSelectionScreen.classList.remove("active");
         battleScreen.classList.add("active");
@@ -104,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function() {
         startBattle();
     });
 
+    // Muestra el equipo del jugador en la pantalla de batalla
     function displayPlayerTeam() {
         playerTeamContainer.innerHTML = "";
         selectedTeam.forEach(function(pokemon, index) {
@@ -130,6 +163,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // Cambia el Pokémon actual del jugador
     function switchPokemon(index) {
         playerIndex = index;
         displayCurrentPokemon();
@@ -137,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
         nextTurn();
     }
 
+    // Muestra el Pokémon actual del jugador y del enemigo
     function displayCurrentPokemon() {
         const playerPokemon = selectedTeam[playerIndex];
         const enemyPokemon = enemyTeam[enemyIndex];
@@ -154,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function() {
         updateMoveButtons(playerPokemon, enemyPokemon);
     }
 
+    // Actualiza las barras de salud de los Pokémon
     function updateHealthBars() {
         const playerPokemon = selectedTeam[playerIndex];
         const enemyPokemon = enemyTeam[enemyIndex];
@@ -173,7 +209,8 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error("El objeto enemyPokemon o la propiedad currentHP no existen");
         }
     }
-    
+
+    // Maneja el ataque del enemigo
     function enemyAttack(playerPokemon, enemyPokemon, callback) {
         if (!playerPokemon || playerPokemon.currentHP === undefined) {
             console.error("El objeto playerPokemon o la propiedad currentHP no existen");
@@ -185,20 +222,17 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     
         const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-        const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
         const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
-        
         battleLog.innerHTML += `<p>${message}</p>`;
         if (hit) {
             playerPokemon.takeDamage(damage);
-    
+            const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
             let effectivenessMessage = "";
             if (effectiveness > 1) {
                 effectivenessMessage = "¡Es súper efectivo!";
             } else if (effectiveness < 1) {
                 effectivenessMessage = "No es muy efectivo...";
             }
-    
             battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
             if (playerPokemon.isFainted()) {
                 battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
@@ -206,6 +240,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (playerIndex >= selectedTeam.length) {
                     battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
                     gameEnded = true;
+                    displayRestartButton();
                     return;
                 }
             }
@@ -214,13 +249,17 @@ document.addEventListener("DOMContentLoaded", function() {
         updateHealthBars();
         if (callback) callback();
     }
-    
+
+    // Actualiza los botones de movimientos disponibles para el jugador
     function updateMoveButtons(playerPokemon, enemyPokemon) {
         moveButtons.innerHTML = "";
         playerPokemon.moves.forEach(function(move) {
             const btn = document.createElement("button");
             btn.textContent = move.name;
+            btn.style.backgroundColor = typeColors[move.type] || "#FFFFFF"; // Aplica el color según el tipo del movimiento
+            btn.disabled = gameEnded; // Deshabilita el botón si el juego ha terminado
             btn.addEventListener("click", function() {
+                if (gameEnded) return; // Si el juego ha terminado, no hacer nada
                 console.log("Botón de movimiento " + move.name + " presionado");
                 if (playerPokemon.speed >= enemyPokemon.speed) {
                     playerAttack(move, playerPokemon, enemyPokemon, function() {
@@ -231,6 +270,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             if (enemyIndex >= enemyTeam.length) {
                                 battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
                                 gameEnded = true;
+                                displayRestartButton();
                                 return;
                             }
                             nextTurn();
@@ -245,6 +285,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                     if (enemyIndex >= enemyTeam.length) {
                                         battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
                                         gameEnded = true;
+                                        displayRestartButton();
                                         return;
                                     }
                                 }
@@ -255,6 +296,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             if (playerIndex >= selectedTeam.length) {
                                 battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
                                 gameEnded = true;
+                                displayRestartButton();
                                 return;
                             }
                             nextTurn();
@@ -265,7 +307,8 @@ document.addEventListener("DOMContentLoaded", function() {
             moveButtons.appendChild(btn);
         });
     }
-    
+
+    // Maneja el ataque del jugador
     function playerAttack(move, playerPokemon, enemyPokemon, callback) {
         const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
         battleLog.innerHTML += `<p>${message}</p>`;
@@ -285,20 +328,23 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (enemyIndex >= enemyTeam.length) {
                     battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
                     gameEnded = true;
+                    displayRestartButton();
                     return;
                 }
             }
         }
-    
+
         updateHealthBars();
         if (callback) callback();
     }
-    
+
+    // Genera un equipo aleatorio de Pokémon para el enemigo
     function generateRandomTeam() {
         const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
         return shuffled.slice(0, 6);
     }
-    
+
+    // Inicia la batalla, genera equipos y controla los turnos
     function startBattle() {
         enemyTeam = generateRandomTeam();
         playerIndex = 0;
@@ -307,25 +353,37 @@ document.addEventListener("DOMContentLoaded", function() {
         gameEnded = false;
         nextTurn();
     }
-    
+
+    // Controla el flujo de los turnos durante la batalla
     function nextTurn() {
         if (gameEnded) return;
-    
+
         if (playerIndex >= selectedTeam.length) {
             battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
             gameEnded = true;
+            displayRestartButton();
             return;
         }
         if (enemyIndex >= enemyTeam.length) {
             battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
             gameEnded = true;
+            displayRestartButton();
             return;
         }
-    
+
         if (!playerTurn) {
             const playerPokemon = selectedTeam[playerIndex];
             const enemyPokemon = enemyTeam[enemyIndex];
             enemyAttack(playerPokemon, enemyPokemon, function() {
+                if (enemyPokemon.isFainted()) {
+                    enemyIndex++;
+                    if (enemyIndex >= enemyTeam.length) {
+                        battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
+                        gameEnded = true;
+                        displayRestartButton();
+                        return;
+                    }
+                }
                 playerTurn = true;
                 displayCurrentPokemon();
             });
@@ -334,12 +392,24 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    // Muestra el botón para reiniciar el juego
+    function displayRestartButton() {
+        const restartButton = document.createElement("button");
+        restartButton.textContent = "Reiniciar Juego";
+        restartButton.addEventListener("click", function() {
+            location.reload(); // Recarga la página para reiniciar el juego
+        });
+        battleScreen.appendChild(restartButton);
+    }
+
+    // Inicia el proceso de selección de equipo
     startButton.addEventListener("click", function() {
         startScreen.classList.remove("active");
         teamSelectionScreen.classList.add("active");
         loadPokemonData();
     });
 
+    // Confirma el equipo seleccionado y empieza la batalla
     confirmTeamButton.addEventListener("click", function() {
         teamSelectionScreen.classList.remove("active");
         battleScreen.classList.add("active");
