@@ -42,16 +42,8 @@ class Pokemon {
         const effectiveness = this.getEffectiveness(move.type, opponent.type);
         let damage;
         if (move.category === "Physical") {
-            if (typeof this.attack !== 'number' || typeof opponent.defense !== 'number' || typeof move.power !== 'number') {
-                console.error("Valores de ataque, defensa o poder del movimiento no son números", this, opponent);
-                return { damage: 0, hit: false, message: `Error en los valores de ataque, defensa o poder del movimiento` };
-            }
             damage = Math.floor((move.power * (this.attack / opponent.defense)) * effectiveness);
         } else if (move.category === "Special") {
-            if (typeof this.spAttack !== 'number' || typeof opponent.spDefense !== 'number' || typeof move.power !== 'number') {
-                console.error("Valores de ataque especial, defensa especial o poder del movimiento no son números", this, opponent);
-                return { damage: 0, hit: false, message: `Error en los valores de ataque especial, defensa especial o poder del movimiento` };
-            }
             damage = Math.floor((move.power * (this.spAttack / opponent.spDefense)) * effectiveness);
         } else {
             damage = 0; // Si el movimiento no tiene una categoría definida, no hace daño
@@ -82,14 +74,7 @@ class Pokemon {
             Fairy: { Fighting: 2, Poison: 0.5, Steel: 0.5, Fire: 0.5, Dragon: 2, Dark: 2 }
         };
 
-        let effectiveness = 1;
-        opponentTypes.forEach(type => {
-            if (typeChart[moveType] && typeChart[moveType][type] !== undefined) {
-                effectiveness *= typeChart[moveType][type];
-            }
-        });
-
-        return effectiveness;
+        return opponentTypes.reduce((eff, type) => eff * (typeChart[moveType]?.[type] || 1), 1);
     }
 }
 
@@ -100,7 +85,7 @@ let allPokemonData = [];
 
 // Carga de datos de Pokémon desde un archivo JSON
 async function loadPokemonData() {
-    const response = await fetch("temp/pokemonData.json"); // Cambia la ruta según la ubicación del archivo JSON
+    const response = await fetch("temp/pokemonData.json");
     const data = await response.json();
     return data;
 }
@@ -143,7 +128,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 });
 
-// Mostrar opciones de Pokémon disponibles
+// Muestra las opciones de Pokémon disponibles
 function displayPokemonOptions() {
     const pokemonList = document.getElementById("pokemon-list");
     pokemonList.innerHTML = "";
