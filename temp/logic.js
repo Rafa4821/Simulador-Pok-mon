@@ -83,6 +83,19 @@ let playerTeam = [];
 let enemyTeam = [];
 let allPokemonData = [];
 
+// Función para reiniciar los Pokémon al estado inicial
+function resetPokemon(pokemon) {
+    pokemon.currentHP = pokemon.hp; // Reinicia la HP actual al HP máximo
+}
+
+// Generación de un equipo aleatorio de Pokémon
+function generateRandomTeam() {
+    const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
+    const team = shuffled.slice(0, 6);
+    team.forEach(resetPokemon); // Reinicia el HP de cada Pokémon en el equipo
+    return team;
+}
+
 // Carga de datos de Pokémon desde un archivo JSON
 async function loadPokemonData() {
     const response = await fetch("temp/pokemonData.json");
@@ -92,23 +105,21 @@ async function loadPokemonData() {
 
 // Inicialización de los objetos Pokémon con sus datos
 function initializePokemon(data) {
-    return data.map(pokemonData => new Pokemon(
-        pokemonData.name,
-        pokemonData.type,
-        pokemonData.hp,
-        pokemonData.attack,
-        pokemonData.defense,
-        pokemonData.spAttack,
-        pokemonData.spDefense,
-        pokemonData.speed,
-        pokemonData.moves.map(move => new Move(move.name, move.type, move.power, move.category, move.accuracy))
-    ));
-}
-
-// Generación de un equipo aleatorio de Pokémon
-function generateRandomTeam() {
-    const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 6);
+    return data.map(pokemonData => {
+        const pokemon = new Pokemon(
+            pokemonData.name,
+            pokemonData.type,
+            pokemonData.hp,
+            pokemonData.attack,
+            pokemonData.defense,
+            pokemonData.spAttack,
+            pokemonData.spDefense,
+            pokemonData.speed,
+            pokemonData.moves.map(move => new Move(move.name, move.type, move.power, move.category, move.accuracy))
+        );
+        resetPokemon(pokemon); // Asegura que cada Pokémon tenga su HP completo
+        return pokemon;
+    });
 }
 
 // Evento que se ejecuta cuando el DOM se ha cargado completamente
@@ -206,35 +217,45 @@ function startBattle() {
     }
 
     // Maneja el ataque del enemigo
-    function enemyAttack(playerPokemon, enemyPokemon, callback) {
-        const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-        const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
-        battleLog.innerHTML += `<p>${message}</p>`;
-        if (hit) {
-            playerPokemon.takeDamage(damage);
-            const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
-            let effectivenessMessage = "";
-            if (effectiveness > 1) {
-                effectivenessMessage = "¡Es súper efectivo!";
-            } else if (effectiveness < 1) {
-                effectivenessMessage = "No es muy efectivo...";
-            }
-            battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
-            if (playerPokemon.isFainted()) {
-                battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
-                playerIndex++;
-                if (playerIndex >= playerTeam.length) {
-                    battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-                    gameEnded = true;
-                    displayRestartButton();
-                    return;
-                }
-            }
+function enemyAttack(playerPokemon, enemyPokemon, callback) {
+    const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
+    const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+    battleLog.innerHTML += `<p>${message}</p>`;
+    if (hit) {
+        playerPokemon.takeDamage(damage);
+        const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
+        let effectivenessMessage = "";
+        if (effectiveness > 1) {
+            effectivenessMessage = "¡Es súper efectivo!";
+        } else if (effectiveness < 1) {
+            effectivenessMessage = "No es muy efectivo...";
         }
-
-        updateHealthBars();
-        if (callback) callback();
+        battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+        if (playerPokemon.isFainted()) {
+            battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
+            playerIndex++;
+            if (playerIndex >= playerTeam.length) {
+                battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
+                gameEnded = true;
+                displayRestartButton();
+                return;
+            }
+            // Llamar a selectNewPokemon en lugar de incrementar el índice del Pokémon del jugador
+            selectNewPokemon();
+            return;
+        }
     }
+
+    updateHealthBars();
+    if (callback) callback();
+}
+
+// Permite al jugador seleccionar un nuevo Pokémon cuando el actual se debilita
+function selectNewPokemon() {
+    alert("Selecciona un nuevo Pokémon");
+    displayPlayerTeam();
+    playerTurn = true; // Asegura que el jugador tiene el turno después de seleccionar un nuevo Pokémon
+}
 
     // Maneja el ataque del jugador
     function playerAttack(move, playerPokemon, enemyPokemon, callback) {
