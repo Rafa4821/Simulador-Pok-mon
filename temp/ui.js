@@ -43,6 +43,11 @@ document.addEventListener("DOMContentLoaded", function() {
         Fairy: "#EE99AC"
     };
 
+    // Función para desplazar el battle log hacia el último mensaje
+    function scrollToBottom() {
+        battleLog.scrollTop = battleLog.scrollHeight;
+    }
+
     // Inicia el juego y muestra la pantalla de selección de equipo
     startButton.addEventListener("click", function() {
         startScreen.classList.remove("active");
@@ -211,6 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         updateHealthBars();
         updateMoveButtons(playerPokemon, enemyPokemon);
+        scrollToBottom(); // Desplazar el battle log hacia abajo después de mostrar el Pokémon actual
     }
 
     // Actualiza las barras de salud de los Pokémon
@@ -232,6 +238,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             console.error("El objeto enemyPokemon o la propiedad currentHP no existen");
         }
+        scrollToBottom(); // Desplazar el battle log hacia abajo después de actualizar las barras de salud
     }
 
     // Maneja el ataque del enemigo
@@ -248,6 +255,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
         const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
         battleLog.innerHTML += `<p>${message}</p>`;
+        scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje del ataque enemigo
         if (hit) {
             playerPokemon.takeDamage(damage);
             const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
@@ -258,8 +266,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 effectivenessMessage = "No es muy efectivo...";
             }
             battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+            scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de efectividad
             if (playerPokemon.isFainted()) {
                 battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
+                scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de debilitado
                 playerIndex++;
                 if (playerIndex >= selectedTeam.length) {
                     battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
@@ -341,6 +351,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function playerAttack(move, playerPokemon, enemyPokemon, callback) {
         const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
         battleLog.innerHTML += `<p>${message}</p>`;
+        scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje del ataque del jugador
         if (hit) {
             enemyPokemon.takeDamage(damage);
             const effectiveness = playerPokemon.getEffectiveness(move.type, enemyPokemon.type);
@@ -351,8 +362,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 effectivenessMessage = "No es muy efectivo...";
             }
             battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+            scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de efectividad
             if (enemyPokemon.isFainted()) {
                 battleLog.innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
+                scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de debilitado
                 enemyIndex++;
                 if (enemyIndex >= enemyTeam.length) {
                     battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
@@ -430,7 +443,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Permite al jugador seleccionar un nuevo Pokémon cuando el actual se debilita
     function selectNewPokemon() {
-        alert("Se ha debilitado tu Pokémon actual.");
+        alert("Selecciona un nuevo Pokémon");
         displayPlayerTeam();
     }
 
