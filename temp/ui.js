@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const maxTeamSize = 6;
     let selectedTeam = [];
-    let allPokemonData = [];
     let playerIndex = 0;
     let enemyIndex = 0;
     let playerTurn = true;

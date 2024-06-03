@@ -122,6 +122,92 @@ function initializePokemon(data) {
     });
 }
 
+// Maneja el ataque del enemigo
+function enemyAttack(playerPokemon, enemyPokemon, callback) {
+    const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
+    const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+    battleLog.innerHTML += `<p>${message}</p>`;
+    scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje del ataque enemigo
+    if (hit) {
+        playerPokemon.takeDamage(damage);
+        const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
+        let effectivenessMessage = "";
+        if (effectiveness > 1) {
+            effectivenessMessage = "¡Es súper efectivo!";
+        } else if (effectiveness < 1) {
+            effectivenessMessage = "No es muy efectivo...";
+        }
+        battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+        scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de efectividad
+        if (playerPokemon.isFainted()) {
+            battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
+            scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de debilitado
+            playerIndex++;
+            if (playerIndex >= playerTeam.length) {
+                battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
+                alert("Has perdido la batalla.");
+                gameEnded = true;
+                displayRestartButton();
+                return;
+            }
+            selectNewPokemon();
+        }
+    }
+
+    updateHealthBars();
+    if (callback) callback();
+}
+
+// Maneja el ataque del jugador
+function playerAttack(move, playerPokemon, enemyPokemon, callback) {
+    const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
+    battleLog.innerHTML += `<p>${message}</p>`;
+    scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje del ataque del jugador
+    if (hit) {
+        enemyPokemon.takeDamage(damage);
+        const effectiveness = playerPokemon.getEffectiveness(move.type, enemyPokemon.type);
+        let effectivenessMessage = "";
+        if (effectiveness > 1) {
+            effectivenessMessage = "¡Es súper efectivo!";
+        } else if (effectiveness < 1) {
+            effectivenessMessage = "No es muy efectivo...";
+        }
+        battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
+        scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de efectividad
+        if (enemyPokemon.isFainted()) {
+            battleLog.innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
+            scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de debilitado
+            enemyIndex++;
+            if (enemyIndex >= enemyTeam.length) {
+                battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
+                alert("¡Has ganado la batalla!");
+                gameEnded = true;
+                displayRestartButton();
+                return;
+            }
+        }
+    }
+
+    updateHealthBars();
+    if (callback) callback();
+}
+
+// Permite al jugador seleccionar un nuevo Pokémon cuando el actual se debilita
+function selectNewPokemon() {
+    alert("Selecciona un nuevo Pokémon");
+    displayPlayerTeam();
+}
+
+// Muestra el botón para reiniciar el juego
+function displayRestartButton() {
+    const restartButton = document.createElement("button");
+    restartButton.textContent = "Reiniciar Juego";
+    restartButton.addEventListener("click", function() {
+        location.reload(); // Recarga la página para reiniciar el juego
+    });
+    document.getElementById("battle-screen").appendChild(restartButton);
+}
+
 // Evento que se ejecuta cuando el DOM se ha cargado completamente
 document.addEventListener("DOMContentLoaded", async function() {
     allPokemonData = await loadPokemonData();
@@ -138,164 +224,3 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.error("El elemento start-button no existe o no se ha cargado aún");
     }
 });
-
-// Muestra las opciones de Pokémon disponibles
-function displayPokemonOptions() {
-    const pokemonList = document.getElementById("pokemon-list");
-    pokemonList.innerHTML = "";
-
-    allPokemonData.forEach(function(pokemon, index) {
-        const btn = document.createElement("button");
-        btn.classList.add("pokemon-list-item");
-        btn.textContent = pokemon.name;
-        btn.addEventListener("click", function() {
-            selectPokemon(index);
-        });
-        pokemonList.appendChild(btn);
-    });
-}
-
-// Selección de un Pokémon
-function selectPokemon(index) {
-    if (playerTeam.length < 6 && !playerTeam.includes(allPokemonData[index])) {
-        playerTeam.push(allPokemonData[index]);
-        const selectedPokemon = document.querySelectorAll(".pokemon-list-item")[index];
-        selectedPokemon.classList.add("selected");
-
-        if (playerTeam.length === 6) {
-            document.getElementById("fight-btn").style.display = "block";
-        }
-    } else {
-        alert("Ya tienes 6 Pokémon en tu equipo o este Pokémon ya está seleccionado.");
-    }
-}
-
-// Iniciar la batalla
-function startBattle() {
-    console.log("La batalla ha comenzado");
-
-    let playerIndex = 0;
-    let enemyIndex = 0;
-    let playerTurn = true;
-    let gameEnded = false;
-
-    function nextTurn() {
-        if (gameEnded) return;
-
-        if (playerIndex >= playerTeam.length) {
-            battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-            gameEnded = true;
-            displayRestartButton();
-            return;
-        }
-        if (enemyIndex >= enemyTeam.length) {
-            battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
-            gameEnded = true;
-            displayRestartButton();
-            return;
-        }
-
-        if (!playerTurn) {
-            const playerPokemon = playerTeam[playerIndex];
-            const enemyPokemon = enemyTeam[enemyIndex];
-            enemyAttack(playerPokemon, enemyPokemon, function() {
-                if (enemyPokemon.isFainted()) {
-                    enemyIndex++;
-                    if (enemyIndex >= enemyTeam.length) {
-                        battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
-                        gameEnded = true;
-                        displayRestartButton();
-                        return;
-                    }
-                }
-                playerTurn = true;
-                displayCurrentPokemon();
-            });
-        } else {
-            displayCurrentPokemon();
-        }
-    }
-
-    // Maneja el ataque del enemigo
-function enemyAttack(playerPokemon, enemyPokemon, callback) {
-    const enemyMove = enemyPokemon.moves[Math.floor(Math.random() * enemyPokemon.moves.length)];
-    const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
-    battleLog.innerHTML += `<p>${message}</p>`;
-    if (hit) {
-        playerPokemon.takeDamage(damage);
-        const effectiveness = enemyPokemon.getEffectiveness(enemyMove.type, playerPokemon.type);
-        let effectivenessMessage = "";
-        if (effectiveness > 1) {
-            effectivenessMessage = "¡Es súper efectivo!";
-        } else if (effectiveness < 1) {
-            effectivenessMessage = "No es muy efectivo...";
-        }
-        battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
-        if (playerPokemon.isFainted()) {
-            battleLog.innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
-            playerIndex++;
-            if (playerIndex >= playerTeam.length) {
-                battleLog.innerHTML += "<p>Has perdido la batalla.</p>";
-                gameEnded = true;
-                displayRestartButton();
-                return;
-            }
-            // Llamar a selectNewPokemon en lugar de incrementar el índice del Pokémon del jugador
-            selectNewPokemon();
-            return;
-        }
-    }
-
-    updateHealthBars();
-    if (callback) callback();
-}
-
-// Permite al jugador seleccionar un nuevo Pokémon cuando el actual se debilita
-function selectNewPokemon() {
-    alert("Selecciona un nuevo Pokémon");
-    displayPlayerTeam();
-    playerTurn = true; // Asegura que el jugador tiene el turno después de seleccionar un nuevo Pokémon
-}
-
-    // Maneja el ataque del jugador
-    function playerAttack(move, playerPokemon, enemyPokemon, callback) {
-        const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
-        battleLog.innerHTML += `<p>${message}</p>`;
-        if (hit) {
-            enemyPokemon.takeDamage(damage);
-            const effectiveness = playerPokemon.getEffectiveness(move.type, enemyPokemon.type);
-            let effectivenessMessage = "";
-            if (effectiveness > 1) {
-                effectivenessMessage = "¡Es súper efectivo!";
-            } else if (effectiveness < 1) {
-                effectivenessMessage = "No es muy efectivo...";
-            }
-            battleLog.innerHTML += `<p>${effectivenessMessage}</p>`;
-            if (enemyPokemon.isFainted()) {
-                battleLog.innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
-                enemyIndex++;
-                if (enemyIndex >= enemyTeam.length) {
-                    battleLog.innerHTML += "<p>¡Has ganado la batalla!</p>";
-                    gameEnded = true;
-                    displayRestartButton();
-                    return;
-                }
-            }
-        }
-
-        updateHealthBars();
-        if (callback) callback();
-    }
-
-    nextTurn();
-}
-
-// Muestra el botón para reiniciar el juego
-function displayRestartButton() {
-    const restartButton = document.createElement("button");
-    restartButton.textContent = "Reiniciar Juego";
-    restartButton.addEventListener("click", function() {
-        location.reload(); // Recarga la página para reiniciar el juego
-    });
-    document.getElementById("battle-screen").appendChild(restartButton);
-}
