@@ -1,3 +1,28 @@
+/* Vista previa del equipo favorito */
+#favorite-team-preview {
+    margin-top: 20px;
+}
+
+/* Estilos para los selectores */
+.styled-select {
+    margin: 10px;
+    padding: 10px;
+    color: white;
+    background-color: red; /* Color rojo */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s; /* Transición para el hover */
+}
+
+/* Estilo de los selectores al pasar el ratón */
+.styled-select:hover {
+    background-color: black; /* Color negro al pasar el ratón */
+}
+
+
+
 /* Estilos generales */
 * {
     box-sizing: border-box;
