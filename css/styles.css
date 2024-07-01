@@ -21,8 +21,6 @@
     background-color: black; /* Color negro al pasar el ratón */
 }
 
-
-
 /* Estilos generales */
 * {
     box-sizing: border-box;
@@ -190,24 +188,69 @@ button:disabled {
     cursor: pointer;
 }
 
-.move-button.Fire { background-color: #F08030; }
-.move-button.Water { background-color: #6890F0; }
-.move-button.Electric { background-color: #F8D030; }
-.move-button.Grass { background-color: #78C850; }
-.move-button.Ice { background-color: #98D8D8; }
-.move-button.Fighting { background-color: #C03028; }
-.move-button.Poison { background-color: #A040A0; }
-.move-button.Ground { background-color: #E0C068; }
-.move-button.Flying { background-color: #A890F0; }
-.move-button.Psychic { background-color: #F85888; }
-.move-button.Bug { background-color: #A8B820; }
-.move-button.Rock { background-color: #B8A038; }
-.move-button.Ghost { background-color: #705898; }
-.move-button.Dragon { background-color: #7038F8; }
-.move-button.Dark { background-color: #705848; }
-.move-button.Steel { background-color: #B8B8D0; }
-.move-button.Fairy { background-color: #EE99AC; }
-.move-button.Normal { background-color: #A8A878; }
+/* Colores de los botones de movimientos según su tipo */
+.move-button.fire {
+    background-color: #F08030;
+}
+.move-button.water {
+    background-color: #6890F0;
+}
+.move-button.grass {
+    background-color: #78C850;
+}
+.move-button.electric {
+    background-color: #F8D030;
+}
+.move-button.ice {
+    background-color: #98D8D8;
+}
+.move-button.fighting {
+    background-color: #C03028;
+}
+.move-button.poison {
+    background-color: #A040A0;
+}
+.move-button.ground {
+    background-color: #E0C068;
+}
+.move-button.flying {
+    background-color: #A890F0;
+}
+.move-button.psychic {
+    background-color: #F85888;
+}
+.move-button.bug {
+    background-color: #A8B820;
+}
+.move-button.rock {
+    background-color: #B8A038;
+}
+.move-button.ghost {
+    background-color: #705898;
+}
+.move-button.dragon {
+    background-color: #7038F8;
+}
+.move-button.dark {
+    background-color: #705848;
+}
+.move-button.steel {
+    background-color: #B8B8D0;
+}
+.move-button.fairy {
+    background-color: #EE99AC;
+}
+
+/* Estilo para los botones seleccionados */
+.selected {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+/* Botón de movimiento seleccionado */
+.move-button.selected {
+    border: 2px solid #FFD700; /* Bordes dorados para movimientos seleccionados */
+}
 
 /* Media queries para dispositivos móviles */
 @media (max-width: 600px) {

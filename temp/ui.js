@@ -5,62 +5,44 @@ const specificPokemonNames = [
     "giratina-origin", "kingdra", "hydreigon", "rayquaza", "torterra"
 ];
 
-const selectedTeam = [];  // Definir selectedTeam en el ámbito global
+let selectedTeam = [];
 const maxTeamSize = 6;
 let allPokemonData = [];
 
 document.addEventListener("DOMContentLoaded", async function() {
     try {
-        await loadTypeChart(); // Carga la tabla de tipos desde PokeAPI
-        await loadPokemonData(); // Carga los datos de Pokémon
-        initializeUI(); // Inicializa la interfaz de usuario
+        await loadTypeChart();
+        await loadPokemonData();
+        initializeUI();
     } catch (error) {
         console.error("Error inicializando la aplicación:", error);
     }
 });
 
 async function loadPokemonData() {
+    const response = await fetch('temp/pokemonData.json');
+    const pokemonData = await response.json();
+
     const pokemonPromises = specificPokemonNames.map(async (name) => {
+        const pokemonInfo = pokemonData.find(p => p.name.toLowerCase() === name.toLowerCase());
+        if (!pokemonInfo) return null;
+
+        const pokemon = {
+            ...pokemonInfo,
+            frontImage: null,
+            backImage: null,
+            abilities: []
+        };
+
         try {
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-            if (!response.ok) throw new Error(`No se pudo cargar los datos de ${name}`);
-            const pokemon = await response.json();
+            const pokemonApiData = await response.json();
 
-            // Verificar que los datos necesarios existen antes de retornar el objeto Pokémon
-            if (!pokemon.name || !pokemon.types || !pokemon.stats || !pokemon.moves) {
-                throw new Error(`Datos incompletos para ${name}`);
-            }
-
-            const stats = pokemon.stats.reduce((acc, stat) => {
-                acc[stat.stat.name] = stat.base_stat;
-                return acc;
-            }, {});
-
-            const moves = await Promise.all(
-                pokemon.moves.map(async (moveInfo) => {
-                    try {
-                        const moveResponse = await fetch(moveInfo.move.url);
-                        if (!moveResponse.ok) throw new Error(`No se pudo cargar los datos del movimiento ${moveInfo.move.name}`);
-                        const moveData = await moveResponse.json();
-                        return {
-                            name: moveData.name,
-                            type: moveData.type.name,
-                            power: moveData.power || 50,
-                            category: moveData.damage_class.name,
-                            accuracy: moveData.accuracy || 100,
-                            effect: moveData.effect_entries.find(entry => entry.language.name === "en")?.short_effect || "No effect"
-                        };
-                    } catch (error) {
-                        console.error(`Error cargando los datos del movimiento ${moveInfo.move.name}:`, error);
-                        return null; // Devolver null si hay un error cargando el movimiento
-                    }
-                })
-            );
-
-            const filteredMoves = moves.filter(move => move !== null); // Filtrar los movimientos que no se pudieron cargar
+            pokemon.frontImage = pokemonApiData.sprites.front_default;
+            pokemon.backImage = pokemonApiData.sprites.back_default;
 
             const abilities = await Promise.all(
-                pokemon.abilities.map(async (abilityInfo) => {
+                pokemonApiData.abilities.map(async (abilityInfo) => {
                     const abilityResponse = await fetch(abilityInfo.ability.url);
                     const abilityData = await abilityResponse.json();
                     return {
@@ -70,31 +52,31 @@ async function loadPokemonData() {
                 })
             );
 
-            return new Pokemon(
-                pokemon.name,
-                pokemon.types.map(typeInfo => typeInfo.type.name),
-                stats.hp,
-                stats.attack,
-                stats.defense,
-                stats["special-attack"],
-                stats["special-defense"],
-                stats.speed,
-                filteredMoves,
-                abilities,
-                pokemon.sprites.front_default,
-                pokemon.sprites.back_default
-            );
+            pokemon.abilities = abilities;
+            pokemon.selectedMoves = [];
         } catch (error) {
-            console.error(`Error procesando los datos de ${name}:`, error);
-            return null;
+            console.error(`Error cargando datos del API para ${name}:`, error);
         }
+
+        return new Pokemon(
+            pokemon.name,
+            pokemon.type,
+            pokemon.hp,
+            pokemon.attack,
+            pokemon.defense,
+            pokemon.spAttack,
+            pokemon.spDefense,
+            pokemon.speed,
+            pokemon.moves,
+            pokemon.abilities,
+            pokemon.frontImage,
+            pokemon.backImage
+        );
     });
 
-    const pokemonData = await Promise.all(pokemonPromises);
-    allPokemonData = pokemonData.filter(pokemon => pokemon !== null && pokemon.name); // Filtra los Pokémon que no se pudieron cargar
+    allPokemonData = (await Promise.all(pokemonPromises)).filter(pokemon => pokemon !== null);
     displayAvailablePokemon(allPokemonData);
 }
-
 
 function initializeUI() {
     const startButton = document.getElementById("start-button");
@@ -118,6 +100,9 @@ function displayAvailablePokemon(pokemonData) {
         const pokemonImg = document.createElement("img");
         pokemonImg.src = pokemon.frontImage;
         pokemonImg.alt = pokemon.name;
+        pokemonImg.addEventListener("click", function() {
+            selectPokemon(pokemon, pokemonItem);
+        });
 
         const pokemonButton = document.createElement("button");
         pokemonButton.textContent = pokemon.name;
@@ -141,6 +126,11 @@ function selectPokemon(pokemon, pokemonItem) {
         pokemonItem.classList.add("selected");
     }
     updateSelectedTeam();
+}
+
+function showMessage(message) {
+    const messageContainer = document.getElementById("message-container");
+    messageContainer.textContent = message;
 }
 
 function updateSelectedTeam() {
@@ -168,15 +158,19 @@ function updateSelectedTeam() {
         pokemonItem.appendChild(removeButton);
         selectedTeamContainer.appendChild(pokemonItem);
 
-        // Display moves and abilities
         displayPokemonDetails(pokemon);
     });
 
     const teamSize = parseInt(document.getElementById("team-size-selector").value);
     const confirmTeamButton = document.getElementById("confirm-team-button");
     confirmTeamButton.disabled = selectedTeam.length < teamSize;
-}
 
+    if (selectedTeam.length < teamSize) {
+        showMessage(`Seleccione ${teamSize} Pokémon para continuar.`);
+    } else {
+        showMessage("Equipo completo. Presione 'Confirmar Equipo' para iniciar la batalla.");
+    }
+}
 
 function displayPokemonDetails(pokemon) {
     const movesContainer = document.getElementById("pokemon-moves");
@@ -188,8 +182,12 @@ function displayPokemonDetails(pokemon) {
     pokemon.moves.forEach(move => {
         const moveButton = document.createElement("button");
         moveButton.textContent = move.name;
+        moveButton.classList.add('move-button', move.type.toLowerCase());
+        if (pokemon.selectedMoves.includes(move)) {
+            moveButton.classList.add('selected');
+        }
         moveButton.addEventListener("click", function() {
-            selectMove(pokemon, move);
+            selectMove(pokemon, move, moveButton);
         });
         movesContainer.appendChild(moveButton);
     });
@@ -197,26 +195,38 @@ function displayPokemonDetails(pokemon) {
     pokemon.abilities.forEach(ability => {
         const abilityButton = document.createElement("button");
         abilityButton.textContent = ability.name;
+        if (pokemon.selectedAbility === ability) {
+            abilityButton.classList.add('selected');
+        }
         abilityButton.addEventListener("click", function() {
-            selectAbility(pokemon, ability);
+            selectAbility(pokemon, ability, abilityButton);
         });
         abilitiesContainer.appendChild(abilityButton);
     });
 }
 
-function selectMove(pokemon, move) {
-    if (pokemon.selectedMoves.length < 4) {
+function selectMove(pokemon, move, moveButton) {
+    const index = pokemon.selectedMoves.indexOf(move);
+    if (index !== -1) {
+        pokemon.selectedMoves.splice(index, 1);
+        moveButton.classList.remove('selected');
+    } else if (pokemon.selectedMoves.length < 4) {
         pokemon.selectedMoves.push(move);
-        updateSelectedTeam();
+        moveButton.classList.add('selected');
     } else {
         alert("Ya has seleccionado 4 movimientos.");
     }
 }
 
-
-function selectAbility(pokemon, ability) {
-    pokemon.selectedAbility = ability;
-    updateSelectedTeam();
+function selectAbility(pokemon, ability, abilityButton) {
+    if (pokemon.selectedAbility === ability) {
+        pokemon.selectedAbility = null;
+        abilityButton.classList.remove('selected');
+    } else {
+        pokemon.selectedAbility = ability;
+        document.querySelectorAll('#pokemon-abilities button').forEach(button => button.classList.remove('selected'));
+        abilityButton.classList.add('selected');
+    }
 }
 
 function deselectPokemon(pokemon) {
@@ -237,7 +247,7 @@ function deselectPokemon(pokemon) {
 document.getElementById("confirm-team-button").addEventListener("click", function() {
     const teamSize = parseInt(document.getElementById("team-size-selector").value);
     if (selectedTeam.length === teamSize) {
-        saveSelectedTeam(); // Guardar el equipo en localStorage
+        saveSelectedTeam();
         document.getElementById("team-selection-screen").classList.remove("active");
         document.getElementById("battle-screen").classList.add("active");
         displayPlayerTeam();
@@ -246,7 +256,6 @@ document.getElementById("confirm-team-button").addEventListener("click", functio
         alert(`Seleccione un equipo de ${teamSize} Pokémon antes de iniciar la batalla.`);
     }
 });
-
 
 function displayPlayerTeam() {
     const playerTeamContainer = document.getElementById("player-team");
@@ -301,9 +310,8 @@ function displayCurrentPokemon() {
 
     updateHealthBars();
     updateMoveButtons(playerPokemon, enemyPokemon);
-    scrollToBottom(); // Desplazar el battle log hacia abajo después de mostrar el Pokémon actual
+    scrollToBottom();
 }
-
 
 function updateHealthBars() {
     const playerPokemon = selectedTeam[playerIndex];
@@ -323,7 +331,7 @@ function updateHealthBars() {
     } else {
         console.error("El objeto enemyPokemon o la propiedad currentHP no existen");
     }
-    scrollToBottom(); // Desplazar el battle log hacia abajo después de actualizar las barras de salud
+    scrollToBottom();
 }
 
 function scrollToBottom() {
@@ -340,7 +348,7 @@ function saveFavoriteTeam(teamName) {
     const team = selectedTeam.map(pokemon => pokemon.name);
     favoriteTeams.push({ name: teamName, team });
     localStorage.setItem('favoriteTeams', JSON.stringify(favoriteTeams));
-    loadFavoriteTeams(); // Reload the favorite teams to show the new one
+    loadFavoriteTeams();
 }
 
 function loadFavoriteTeams() {
@@ -353,7 +361,7 @@ function loadFavoriteTeams() {
         teamButton.addEventListener('click', function() {
             selectedTeam = allPokemonData.filter(pokemon => favorite.team.includes(pokemon.name));
             updateFavoriteTeamPreview();
-            document.getElementById("start-battle-favorite-button").disabled = false; // Enable the start battle button
+            document.getElementById("start-battle-favorite-button").disabled = false;
         });
         favoriteTeamsContainer.appendChild(teamButton);
     });
@@ -417,7 +425,7 @@ document.getElementById("back-to-start-button").addEventListener("click", functi
 function generateRandomTeam() {
     const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
     const team = shuffled.slice(0, maxTeamSize);
-    team.forEach(pokemon => pokemon.currentHP = pokemon.hp); // Reinicia el HP de cada Pokémon en el equipo
+    team.forEach(pokemon => pokemon.currentHP = pokemon.hp);
     return team;
 }
 
@@ -427,7 +435,7 @@ function startBattle() {
     enemyIndex = 0;
     playerTurn = true;
     gameEnded = false;
-    selectedTeam.forEach(pokemon => pokemon.currentHP = pokemon.hp); // Reinicia el HP de cada Pokémon del jugador
+    selectedTeam.forEach(pokemon => pokemon.currentHP = pokemon.hp);
     nextTurn();
 }
 
@@ -491,10 +499,10 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
     playerPokemon.selectedMoves.forEach(function(move) {
         const btn = document.createElement("button");
         btn.textContent = move.name;
-        btn.classList.add('move-button', move.type);
-        btn.disabled = gameEnded; // Deshabilita el botón si el juego ha terminado
+        btn.classList.add('move-button', move.type.toLowerCase());
+        btn.disabled = gameEnded;
         btn.addEventListener("click", function() {
-            if (gameEnded) return; // Si el juego ha terminado, no hacer nada
+            if (gameEnded) return;
             console.log("Botón de movimiento " + move.name + " presionado");
             if (playerPokemon.speed >= enemyPokemon.speed) {
                 playerAttack(move, playerPokemon, enemyPokemon, function() {
@@ -546,11 +554,10 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
     });
 }
 
-
 function playerAttack(move, playerPokemon, enemyPokemon, callback) {
     const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
     document.getElementById("battle-log").innerHTML += `<p>${message}</p>`;
-    scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje del ataque del jugador
+    scrollToBottom();
     if (hit) {
         enemyPokemon.takeDamage(damage);
         const effectiveness = getEffectiveness(move.type, enemyPokemon.types);
@@ -561,10 +568,10 @@ function playerAttack(move, playerPokemon, enemyPokemon, callback) {
             effectivenessMessage = "No es muy efectivo...";
         }
         document.getElementById("battle-log").innerHTML += `<p>${effectivenessMessage}</p>`;
-        scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de efectividad
+        scrollToBottom();
         if (enemyPokemon.isFainted()) {
             document.getElementById("battle-log").innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
-            scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de debilitado
+            scrollToBottom();
             enemyIndex++;
             if (enemyIndex >= enemyTeam.length) {
                 document.getElementById("battle-log").innerHTML += "<p>¡Has ganado la batalla!</p>";
@@ -593,7 +600,7 @@ function enemyAttack(playerPokemon, enemyPokemon, callback) {
     const enemyMove = enemyPokemon.selectedMoves[Math.floor(Math.random() * enemyPokemon.selectedMoves.length)];
     const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
     document.getElementById("battle-log").innerHTML += `<p>${message}</p>`;
-    scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje del ataque enemigo
+    scrollToBottom();
     if (hit) {
         playerPokemon.takeDamage(damage);
         const effectiveness = getEffectiveness(enemyMove.type, playerPokemon.types);
@@ -604,10 +611,10 @@ function enemyAttack(playerPokemon, enemyPokemon, callback) {
             effectivenessMessage = "No es muy efectivo...";
         }
         document.getElementById("battle-log").innerHTML += `<p>${effectivenessMessage}</p>`;
-        scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de efectividad
+        scrollToBottom();
         if (playerPokemon.isFainted()) {
             document.getElementById("battle-log").innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
-            scrollToBottom(); // Desplazar el battle log hacia abajo después de agregar el mensaje de debilitado
+            scrollToBottom();
             playerIndex++;
             if (playerIndex >= selectedTeam.length) {
                 document.getElementById("battle-log").innerHTML += "<p>Has perdido la batalla.</p>";

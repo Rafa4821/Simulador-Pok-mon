@@ -77,6 +77,10 @@ async function loadTypeChart() {
 
 function getEffectiveness(moveType, opponentTypes) {
     let effectiveness = 1;
+    if (!typeChart[moveType]) {
+        console.error(`Tipo de movimiento desconocido: ${moveType}`);
+        return effectiveness;
+    }
     opponentTypes.forEach(type => {
         if (typeChart[moveType].double_damage_to.includes(type)) {
             effectiveness *= 2;
