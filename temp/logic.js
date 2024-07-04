@@ -45,7 +45,7 @@ class Pokemon {
             return { damage: 0, hit: false, message: `${this.name} usa ${move.name} pero falla.` }; // El ataque falla
         }
 
-        const effectiveness = getEffectiveness(move.type, opponent.types);
+        const effectiveness = getEffectiveness(move.type.toLowerCase(), opponent.types);
         let damage;
         if (move.category === "physical") {
             damage = Math.floor((move.power * (this.attack / opponent.defense)) * effectiveness);
@@ -55,25 +55,34 @@ class Pokemon {
             damage = 0; // Si el movimiento no tiene una categoría definida, no hace daño
         }
 
+        if (isNaN(damage)) {
+            damage = 0; // Evita mostrar NaN como daño
+        }
+
         return { damage: damage, hit: true, message: `${this.name} usa ${move.name} y causa ${damage} de daño a ${opponent.name}` };
     }
 }
 
-let typeChart = {};
-
-async function loadTypeChart() {
-    const types = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"];
-    const typePromises = types.map(async (type) => {
-        const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
-        const typeData = await response.json();
-        typeChart[type] = {
-            double_damage_to: typeData.damage_relations.double_damage_to.map(t => t.name),
-            half_damage_to: typeData.damage_relations.half_damage_to.map(t => t.name),
-            no_damage_to: typeData.damage_relations.no_damage_to.map(t => t.name)
-        };
-    });
-    await Promise.all(typePromises);
-}
+const typeChart = {
+    normal: { double_damage_to: [], half_damage_to: ["rock", "steel"], no_damage_to: ["ghost"] },
+    fire: { double_damage_to: ["grass", "ice", "bug", "steel"], half_damage_to: ["fire", "water", "rock", "dragon"], no_damage_to: [] },
+    water: { double_damage_to: ["fire", "ground", "rock"], half_damage_to: ["water", "grass", "dragon"], no_damage_to: [] },
+    electric: { double_damage_to: ["water", "flying"], half_damage_to: ["electric", "grass", "dragon"], no_damage_to: ["ground"] },
+    grass: { double_damage_to: ["water", "ground", "rock"], half_damage_to: ["fire", "grass", "poison", "flying", "bug", "dragon", "steel"], no_damage_to: [] },
+    ice: { double_damage_to: ["grass", "ground", "flying", "dragon"], half_damage_to: ["fire", "water", "ice", "steel"], no_damage_to: [] },
+    fighting: { double_damage_to: ["normal", "ice", "rock", "dark", "steel"], half_damage_to: ["poison", "flying", "psychic", "bug", "fairy"], no_damage_to: ["ghost"] },
+    poison: { double_damage_to: ["grass", "fairy"], half_damage_to: ["poison", "ground", "rock", "ghost"], no_damage_to: ["steel"] },
+    ground: { double_damage_to: ["fire", "electric", "poison", "rock", "steel"], half_damage_to: ["grass", "bug"], no_damage_to: ["flying"] },
+    flying: { double_damage_to: ["grass", "fighting", "bug"], half_damage_to: ["electric", "rock", "steel"], no_damage_to: [] },
+    psychic: { double_damage_to: ["fighting", "poison"], half_damage_to: ["psychic", "steel"], no_damage_to: ["dark"] },
+    bug: { double_damage_to: ["grass", "psychic", "dark"], half_damage_to: ["fire", "fighting", "poison", "flying", "ghost", "steel", "fairy"], no_damage_to: [] },
+    rock: { double_damage_to: ["fire", "ice", "flying", "bug"], half_damage_to: ["fighting", "ground", "steel"], no_damage_to: [] },
+    ghost: { double_damage_to: ["psychic", "ghost"], half_damage_to: ["dark"], no_damage_to: ["normal"] },
+    dragon: { double_damage_to: ["dragon"], half_damage_to: ["steel"], no_damage_to: ["fairy"] },
+    dark: { double_damage_to: ["psychic", "ghost"], half_damage_to: ["fighting", "dark", "fairy"], no_damage_to: [] },
+    steel: { double_damage_to: ["ice", "rock", "fairy"], half_damage_to: ["fire", "water", "electric", "steel"], no_damage_to: [] },
+    fairy: { double_damage_to: ["fighting", "dragon", "dark"], half_damage_to: ["fire", "poison", "steel"], no_damage_to: [] },
+};
 
 function getEffectiveness(moveType, opponentTypes) {
     let effectiveness = 1;
@@ -82,13 +91,13 @@ function getEffectiveness(moveType, opponentTypes) {
         return effectiveness;
     }
     opponentTypes.forEach(type => {
-        if (typeChart[moveType].double_damage_to.includes(type)) {
+        if (typeChart[moveType].double_damage_to.includes(type.toLowerCase())) {
             effectiveness *= 2;
         }
-        if (typeChart[moveType].half_damage_to.includes(type)) {
+        if (typeChart[moveType].half_damage_to.includes(type.toLowerCase())) {
             effectiveness *= 0.5;
         }
-        if (typeChart[moveType].no_damage_to.includes(type)) {
+        if (typeChart[moveType].no_damage_to.includes(type.toLowerCase())) {
             effectiveness *= 0;
         }
     });

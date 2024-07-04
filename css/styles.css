@@ -247,11 +247,6 @@ button:disabled {
     color: #fff !important;
 }
 
-/* Botón de movimiento seleccionado */
-.move-button.selected {
-    border: 2px solid #FFD700; /* Bordes dorados para movimientos seleccionados */
-}
-
 /* Media queries para dispositivos móviles */
 @media (max-width: 600px) {
     .pokemon-list {

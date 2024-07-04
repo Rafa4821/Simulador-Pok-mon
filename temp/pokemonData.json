@@ -9,16 +9,36 @@
         "spDefense": 175,
         "speed": 205,
         "moves": [
-            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
             {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical", "accuracy": 95},
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Heat Wave", "type": "Fire", "power": 95, "category": "Special", "accuracy": 90},
-            {"name": "Air Slash", "type": "Flying", "power": 75, "category": "Special", "accuracy": 95},
+            {"name": "Heat Wave", "type": "Fire", "power": 95, "category": "Special", "accuracy": 90, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Air Slash", "type": "Flying", "power": 75, "category": "Special", "accuracy": 95, "effect": {"name": "flinch", "chance": 30, "description": "May make the target flinch."}},
             {"name": "Blast Burn", "type": "Fire", "power": 150, "category": "Special", "accuracy": 90},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
-            {"name": "Flare Blitz", "type": "Fire", "power": 120, "category": "Physical", "accuracy": 100}
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Flare Blitz", "type": "Fire", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "recoil", "chance": 100, "description": "The user receives recoil damage."}}
         ],
-        "abilities": ["Blaze", "Solar Power"]
+        "abilities": [
+            {"name": "Blaze",
+            "effect": {
+                "description": "Powers up Fire-type moves when the Pokémon's HP is low.",
+                "trigger": "lowHP",
+                "multiplier": 1.5,
+                "type": "Fire"
+            }
+        },
+        {
+            "name": "Solar Power",
+            "effect": {
+                "description": "Boosts the Sp. Atk stat in sunny weather, but HP decreases.",
+                "trigger": "sunny",
+                "statBoost": {
+                    "spAttack": 1.5
+                },
+                "hpDecreasePerTurn": 0.1
+            }
+        }
+    ]
     },
     {
         "name": "Feraligatr",
@@ -30,16 +50,33 @@
         "spDefense": 171,
         "speed": 161,
         "moves": [
-            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical", "accuracy": 95},
+            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "flinch", "chance": 20, "description": "May make the target flinch."}},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerDef", "chance": 20, "description": "May lower the target's Defense."}},
+            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical", "accuracy": 95, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
             {"name": "Hydro Pump", "type": "Water", "power": 110, "category": "Special", "accuracy": 80},
-            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100},
+            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerAtkDef", "chance": 100, "description": "Lowers the user's Attack and Defense."}},
             {"name": "Aqua Tail", "type": "Water", "power": 90, "category": "Physical", "accuracy": 90},
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100}
         ],
-        "abilities": ["Torrent", "Sheer Force"]
+        "abilities": [
+            {"name": "Torrent",
+            "effect": {
+                "description": "Powers up Water-type moves when the Pokémon's HP is low.",
+                "trigger": "lowHP",
+                "multiplier": 1.5,
+                "type": "Water"
+            }
+        },
+        {
+            "name": "Sheer Force",
+            "effect": {
+                "description": "Removes added effects to increase move damage.",
+                "damageIncrease": 1.3,
+                "removeSecondaryEffects": true
+            }
+        }
+    ]
     },
     {
         "name": "Venusaur",
@@ -52,15 +89,34 @@
         "speed": 165,
         "moves": [
             {"name": "Solar Beam", "type": "Grass", "power": 120, "category": "Special", "accuracy": 100},
-            {"name": "Sludge Bomb", "type": "Poison", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Sludge Bomb", "type": "Poison", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "poison", "chance": 30, "description": "May poison the target."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
-            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Giga Drain", "type": "Grass", "power": 75, "category": "Special", "accuracy": 100},
+            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "recoil", "chance": 100, "description": "The user receives recoil damage."}},
+            {"name": "Giga Drain", "type": "Grass", "power": 75, "category": "Special", "accuracy": 100, "effect": {"name": "heal", "chance": 100, "description": "User recovers half the HP inflicted on the target."}},
             {"name": "Frenzy Plant", "type": "Grass", "power": 150, "category": "Special", "accuracy": 90},
             {"name": "Hidden Power", "type": "Fire", "power": 60, "category": "Special", "accuracy": 100},
-            {"name": "Rock Slide", "type": "Rock", "power": 75, "category": "Physical", "accuracy": 90}
+            {"name": "Rock Slide", "type": "Rock", "power": 75, "category": "Physical", "accuracy": 90, "effect": {"name": "flinch", "chance": 30, "description": "May make the target flinch."}}
         ],
-        "abilities": ["Overgrow", "Chlorophyll"]
+        "abilities": [
+            {"name": "Overgrow",
+            "effect": {
+                "description": "Powers up Grass-type moves when the Pokémon's HP is low.",
+                "trigger": "lowHP",
+                "multiplier": 1.5,
+                "type": "Grass"
+            }
+        },
+        {
+            "name": "Chlorophyll",
+            "effect": {
+                "description": "Boosts the Pokémon's Speed stat in harsh sunlight.",
+                "trigger": "sunny",
+                "statBoost": {
+                    "speed": 2
+                }
+            }
+        }
+    ]
     },
     {
         "name": "Blaziken",
@@ -72,16 +128,35 @@
         "spDefense": 145,
         "speed": 165,
         "moves": [
-            {"name": "Blaze Kick", "type": "Fire", "power": 85, "category": "Physical", "accuracy": 90},
+            {"name": "Blaze Kick", "type": "Fire", "power": 85, "category": "Physical", "accuracy": 90, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
             {"name": "Sky Uppercut", "type": "Fighting", "power": 85, "category": "Physical", "accuracy": 90},
-            {"name": "Flare Blitz", "type": "Fire", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Brave Bird", "type": "Flying", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "High Jump Kick", "type": "Fighting", "power": 130, "category": "Physical", "accuracy": 90},
-            {"name": "Fire Blast", "type": "Fire", "power": 110, "category": "Special", "accuracy": 85},
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80}
+            {"name": "Flare Blitz", "type": "Fire", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "recoil", "chance": 100, "description": "The user receives recoil damage."}},
+            {"name": "Brave Bird", "type": "Flying", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "recoil", "chance": 100, "description": "The user receives recoil damage."}},
+            {"name": "High Jump Kick", "type": "Fighting", "power": 130, "category": "Physical", "accuracy": 90, "effect": {"name": "crash", "chance": 100, "description": "If it misses, the user is hurt instead."}},
+            {"name": "Fire Blast", "type": "Fire", "power": 110, "category": "Special", "accuracy": 85, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}}
         ],
-        "abilities": ["Blaze", "Speed Boost"]
+        "abilities": [
+            {"name": "Blaze",
+            "effect": {
+                "description": "Powers up Fire-type moves when the Pokémon's HP is low.",
+                "trigger": "lowHP",
+                "multiplier": 1.5,
+                "type": "Fire"
+            }
+        },
+        {
+            "name": "Speed Boost",
+            "effect": {
+                "description": "Its Speed stat is boosted every turn.",
+                "trigger": "endOfTurn",
+                "statBoost": {
+                    "speed": 1.5
+                }
+            }
+        }
+    ]
     },
     {
         "name": "Tyranitar",
@@ -93,16 +168,32 @@
         "spDefense": 205,
         "speed": 137,
         "moves": [
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerDef", "chance": 20, "description": "May lower the target's Defense."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
             {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100},
+            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerAtkDef", "chance": 100, "description": "Lowers the user's Attack and Defense."}},
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100}
         ],
-        "abilities": ["Sand Stream", "Unnerve"]
+        "abilities": [
+            {"name": "Sand Stream",
+            "effect": {
+                "description": "Summons a sandstorm when the Pokémon enters battle.",
+                "trigger": "onEntry",
+                "weather": "sandstorm"
+            }
+        },
+        {
+            "name": "Unnerve",
+            "effect": {
+                "description": "Makes the foe nervous and unable to eat Berries.",
+                "trigger": "onEntry",
+                "disableBerries": true
+            }
+        }
+    ]
     },
     {
         "name": "Sceptile",
@@ -114,16 +205,35 @@
         "spDefense": 165,
         "speed": 245,
         "moves": [
-            {"name": "Leaf Blade", "type": "Grass", "power": 90, "category": "Physical", "accuracy": 100},
+            {"name": "Leaf Blade", "type": "Grass", "power": 90, "category": "Physical", "accuracy": 100, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}},
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
             {"name": "X-Scissor", "type": "Bug", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Giga Drain", "type": "Grass", "power": 75, "category": "Special", "accuracy": 100},
-            {"name": "Leaf Storm", "type": "Grass", "power": 130, "category": "Special", "accuracy": 90},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
-            {"name": "Rock Slide", "type": "Rock", "power": 75, "category": "Physical", "accuracy": 90}
+            {"name": "Giga Drain", "type": "Grass", "power": 75, "category": "Special", "accuracy": 100, "effect": {"name": "heal", "chance": 100, "description": "User recovers half the HP inflicted on the target."}},
+            {"name": "Leaf Storm", "type": "Grass", "power": 130, "category": "Special", "accuracy": 90, "effect": {"name": "lowerSpAtk", "chance": 100, "description": "Sharply lowers the user's Special Attack."}},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Rock Slide", "type": "Rock", "power": 75, "category": "Physical", "accuracy": 90, "effect": {"name": "flinch", "chance": 30, "description": "May make the target flinch."}}
         ],
-        "abilities": ["Overgrow", "Unburden"]
+        "abilities": [
+            {"name": "Overgrow",
+            "effect": {
+                "description": "Powers up Grass-type moves when the Pokémon's HP is low.",
+                "trigger": "lowHP",
+                "multiplier": 1.5,
+                "type": "Grass"
+            }
+        },
+        {
+            "name": "Unburden",
+            "effect": {
+                "description": "Boosts the Speed stat if its held item is used or lost.",
+                "trigger": "itemUsed",
+                "statBoost": {
+                    "speed": 2
+                }
+            }
+        }
+    ]
     },
     {
         "name": "Aggron",
@@ -135,16 +245,39 @@
         "spDefense": 135,
         "speed": 105,
         "moves": [
-            {"name": "Iron Tail", "type": "Steel", "power": 100, "category": "Physical", "accuracy": 75},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80},
+            {"name": "Iron Tail", "type": "Steel", "power": 100, "category": "Physical", "accuracy": 75, "effect": {"name": "lowerDef", "chance": 30, "description": "May lower the target's Defense."}},
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
             {"name": "Heavy Slam", "type": "Steel", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Avalanche", "type": "Ice", "power": 60, "category": "Physical", "accuracy": 100}
+            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerAtkDef", "chance": 100, "description": "Lowers the user's Attack and Defense."}},
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Avalanche", "type": "Ice", "power": 60, "category": "Physical", "accuracy": 100, "effect": {"name": "doubleDamage", "chance": 100, "description": "Power doubles if user is hit first."}}
         ],
-        "abilities": ["Sturdy", "Rock Head", "Heavy Metal"]
+        "abilities": [
+            {"name": "Sturdy",
+            "effect": {
+                "description": "It cannot be knocked out with one hit.",
+                "trigger": "oneHitKO",
+                "preventOneHitKO": true
+            }
+        },
+        {
+            "name": "Rock Head",
+            "effect": {
+                "description": "Protects the Pokémon from recoil damage.",
+                "trigger": "recoil",
+                "preventRecoil": true
+            }
+        },
+        {
+            "name": "Heavy Metal",
+            "effect": {
+                "description": "Doubles the Pokémon's weight.",
+                "weightMultiplier": 2
+            }
+        }
+    ]
     },
     {
         "name": "Mewtwo",
@@ -156,16 +289,32 @@
         "spDefense": 170,
         "speed": 240,
         "moves": [
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 20, "description": "May lower the target's Special Defense."}},
             {"name": "Aura Sphere", "type": "Fighting", "power": 80, "category": "Special", "accuracy": 100},
-            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
-            {"name": "Recover", "type": "Normal", "power": 0, "category": "Status", "accuracy": 0}
+            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
+            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Recover", "type": "Normal", "power": 0, "category": "Status", "accuracy": 0, "effect": {"name": "heal", "chance": 100, "description": "Restores up to half of the user's max HP."}}
         ],
-        "abilities": ["Pressure", "Unnerve"]
+        "abilities": [
+            {"name": "Pressure",
+            "effect": {
+                "description": "Raises the foe's PP usage.",
+                "trigger": "onContact",
+                "ppMultiplier": 2
+            }
+        },
+        {
+            "name": "Unnerve",
+            "effect": {
+                "description": "Makes the foe nervous and unable to eat Berries.",
+                "trigger": "onEntry",
+                "disableBerries": true
+            }
+        }
+    ]
     },
     {
         "name": "Dragonite",
@@ -179,14 +328,29 @@
         "moves": [
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
             {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical", "accuracy": 95},
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
-            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
             {"name": "Aqua Tail", "type": "Water", "power": 90, "category": "Physical", "accuracy": 90},
-            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Hurricane", "type": "Flying", "power": 110, "category": "Special", "accuracy": 70}
+            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "confuse", "chance": 100, "description": "User becomes confused after use."}},
+            {"name": "Hurricane", "type": "Flying", "power": 110, "category": "Special", "accuracy": 70, "effect": {"name": "confuse", "chance": 30, "description": "May confuse the target."}}
         ],
-        "abilities": ["Inner Focus", "Multiscale"]
+        "abilities": [
+            {"name": "Inner Focus",
+            "effect": {
+                "description": "The Pokémon is protected from flinching.",
+                "preventFlinching": true
+            }
+        },
+        {
+            "name": "Multiscale",
+            "effect": {
+                "description": "Reduces damage taken when at full HP.",
+                "trigger": "fullHP",
+                "damageMultiplier": 0.5
+            }
+        }
+    ]
     },
     {
         "name": "Gyarados",
@@ -198,16 +362,36 @@
         "spDefense": 197,
         "speed": 167,
         "moves": [
-            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "flinch", "chance": 20, "description": "May make the target flinch."}},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerDef", "chance": 20, "description": "May lower the target's Defense."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
-            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical", "accuracy": 95},
+            {"name": "Ice Fang", "type": "Ice", "power": 65, "category": "Physical", "accuracy": 95, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
             {"name": "Aqua Tail", "type": "Water", "power": 90, "category": "Physical", "accuracy": 90},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80},
-            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Iron Head", "type": "Steel", "power": 80, "category": "Physical", "accuracy": 100}
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}},
+            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "confuse", "chance": 100, "description": "User becomes confused after use."}},
+            {"name": "Iron Head", "type": "Steel", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "flinch", "chance": 30, "description": "May make the target flinch."}}
         ],
-        "abilities": ["Intimidate", "Moxie"]
+        "abilities": [
+            {"name": "Intimidate",
+            "effect": {
+                "description": "Lowers the foe's Attack stat.",
+                "trigger": "onEntry",
+                "statDecrease": {
+                    "attack": 0.67
+                }
+            }
+        },
+        {
+            "name": "Moxie",
+            "effect": {
+                "description": "Boosts the Attack stat after knocking out any Pokémon.",
+                "trigger": "onKnockOut",
+                "statBoost": {
+                    "attack": 1.5
+                }
+            }
+        }
+    ]
     },
     {
         "name": "Lapras",
@@ -220,15 +404,39 @@
         "speed": 135,
         "moves": [
             {"name": "Surf", "type": "Water", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
             {"name": "Hydro Pump", "type": "Water", "power": 110, "category": "Special", "accuracy": 80},
-            {"name": "Blizzard", "type": "Ice", "power": 110, "category": "Special", "accuracy": 70},
+            {"name": "Blizzard", "type": "Ice", "power": 110, "category": "Special", "accuracy": 70, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
             {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special", "accuracy": 100},
-            {"name": "Body Slam", "type": "Normal", "power": 85, "category": "Physical", "accuracy": 100}
+            {"name": "Body Slam", "type": "Normal", "power": 85, "category": "Physical", "accuracy": 100, "effect": {"name": "paralyze", "chance": 30, "description": "May paralyze the target."}}
         ],
-        "abilities": ["Water Absorb", "Shell Armor", "Hydration"]
+        "abilities": [
+            {"name": "Water Absorb",
+            "effect": {
+                "description": "Restores HP if hit by a Water-type move.",
+                "trigger": "hitByMove",
+                "type": "Water",
+                "healPercentage": 0.25
+            }
+        },
+        {
+            "name": "Shell Armor",
+            "effect": {
+                "description": "The Pokémon is protected against critical hits.",
+                "preventCriticalHits": true
+            }
+        },
+        {
+            "name": "Hydration",
+            "effect": {
+                "description": "Heals status conditions if it's raining.",
+                "trigger": "rain",
+                "healStatusConditions": true
+            }
+        }
+                    ]
     },
     {
         "name": "Weavile",
@@ -240,16 +448,33 @@
         "spDefense": 165,
         "speed": 295,
         "moves": [
-            {"name": "Night Slash", "type": "Dark", "power": 70, "category": "Physical", "accuracy": 100},
-            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Night Slash", "type": "Dark", "power": 70, "category": "Physical", "accuracy": 100, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}},
+            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
             {"name": "Brick Break", "type": "Fighting", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Poison Jab", "type": "Poison", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Poison Jab", "type": "Poison", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "poison", "chance": 30, "description": "May poison the target."}},
             {"name": "X-Scissor", "type": "Bug", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Low Kick", "type": "Fighting", "power": 100, "category": "Physical", "accuracy": 100},
+            {"name": "Low Kick", "type": "Fighting", "power": 100, "category": "Physical", "accuracy": 100, "effect": {"name": "weight", "chance": 100, "description": "More power the heavier the target."}},
             {"name": "Aerial Ace", "type": "Flying", "power": 60, "category": "Physical", "accuracy": 100},
-            {"name": "Throat Chop", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100}
+            {"name": "Throat Chop", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "disableSound", "chance": 100, "description": "Prevents the target from using sound-based moves for two turns."}}
         ],
-        "abilities": ["Pressure", "Pickpocket"]
+        "abilities": [
+            {"name": "Pressure",
+            "effect": {
+                "description": "Raises the foe's PP usage.",
+                "trigger": "onContact",
+                "ppMultiplier": 2
+            }
+        },
+        {
+            "name": "Pickpocket",
+            "effect": {
+                "description": "Steals an item when hit by another Pokémon.",
+                "trigger": "hitByMove",
+                "stealItem": true
+            }
+        }
+    ]
+
     },
     {
         "name": "Alakazam",
@@ -261,16 +486,38 @@
         "spDefense": 195,
         "speed": 245,
         "moves": [
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
-            {"name": "Energy Ball", "type": "Grass", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 20, "description": "May lower the target's Special Defense."}},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Energy Ball", "type": "Grass", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
             {"name": "Dazzling Gleam", "type": "Fairy", "power": 80, "category": "Special", "accuracy": 100},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
             {"name": "Hyper Beam", "type": "Normal", "power": 150, "category": "Special", "accuracy": 90}
         ],
-        "abilities": ["Synchronize", "Inner Focus", "Magic Guard"]
+        "abilities": [
+            {"name": "Synchronize",
+            "effect": {
+                "description": "Passes a burn, poison, or paralysis to the foe.",
+                "trigger": "statusCondition",
+                "passStatus": true
+            }
+        },
+        {
+            "name": "Inner Focus",
+            "effect": {
+                "description": "The Pokémon is protected from flinching.",
+                "preventFlinching": true
+            }
+        },
+        {
+            "name": "Magic Guard",
+            "effect": {
+                "description": "The Pokémon only takes damage from attacks.",
+                "preventIndirectDamage": true
+            }
+        }
+    ]
     },
     {
         "name": "Magmortar",
@@ -282,16 +529,32 @@
         "spDefense": 195,
         "speed": 185,
         "moves": [
-            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Fire Blast", "type": "Fire", "power": 110, "category": "Special", "accuracy": 85},
+            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Fire Blast", "type": "Fire", "power": 110, "category": "Special", "accuracy": 85, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
             {"name": "Solar Beam", "type": "Grass", "power": 120, "category": "Special", "accuracy": 100},
             {"name": "Hyper Beam", "type": "Normal", "power": 150, "category": "Special", "accuracy": 90},
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100}
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}}
         ],
-        "abilities": ["Flame Body", "Vital Spirit"]
+        "abilities": [
+            {"name": "Flame Body",
+            "effect": {
+                "description": "May burn the foe if it contacts the Pokémon.",
+                "trigger": "onContact",
+                "chance": 0.3,
+                "statusCondition": "burn"
+            }
+        },
+        {
+            "name": "Vital Spirit",
+            "effect": {
+                "description": "Prevents the Pokémon from falling asleep.",
+                "preventSleep": true
+            }
+        }
+    ]
     },
     {
         "name": "Electivire",
@@ -303,16 +566,34 @@
         "spDefense": 175,
         "speed": 205,
         "moves": [
-            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100},
+            {"name": "Thunder Punch", "type": "Electric", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
-            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Cross Chop", "type": "Fighting", "power": 100, "category": "Physical", "accuracy": 80},
+            {"name": "Fire Punch", "type": "Fire", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Cross Chop", "type": "Fighting", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}},
             {"name": "Giga Impact", "type": "Normal", "power": 150, "category": "Physical", "accuracy": 90},
-            {"name": "Rock Slide", "type": "Rock", "power": 75, "category": "Physical", "accuracy": 90}
+            {"name": "Rock Slide", "type": "Rock", "power": 75, "category": "Physical", "accuracy": 90, "effect": {"name": "flinch", "chance": 30, "description": "May make the target flinch."}}
         ],
-        "abilities": ["Motor Drive", "Vital Spirit"]
+        "abilities": [
+            {"name": "Motor Drive",
+            "effect": {
+                "description": "Boosts the Speed stat if hit by an Electric-type move.",
+                "trigger": "hitByMove",
+                "type": "Electric",
+                "statBoost": {
+                    "speed": 1.5
+                }
+            }
+        },
+        {
+            "name": "Vital Spirit",
+            "effect": {
+                "description": "Prevents the Pokémon from falling asleep.",
+                "preventSleep": true
+            }
+        }
+    ]
     },
     {
         "name": "Salamence",
@@ -327,13 +608,33 @@
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
             {"name": "Fly", "type": "Flying", "power": 90, "category": "Physical", "accuracy": 95},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
-            {"name": "Fire Fang", "type": "Fire", "power": 65, "category": "Physical", "accuracy": 95},
-            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Hurricane", "type": "Flying", "power": 110, "category": "Special", "accuracy": 70},
+            {"name": "Fire Fang", "type": "Fire", "power": 65, "category": "Physical", "accuracy": 95, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "confuse", "chance": 100, "description": "User becomes confused after use."}},
+            {"name": "Hurricane", "type": "Flying", "power": 110, "category": "Special", "accuracy": 70, "effect": {"name": "confuse", "chance": 30, "description": "May confuse the target."}},
             {"name": "Hydro Pump", "type": "Water", "power": 110, "category": "Special", "accuracy": 80},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80}
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}}
         ],
-        "abilities": ["Intimidate", "Moxie"]
+        "abilities": [
+            {"name": "Intimidate",
+            "effect": {
+                "description": "Lowers the foe's Attack stat.",
+                "trigger": "onEntry",
+                "statDecrease": {
+                    "attack": 0.67
+                }
+            }
+        },
+        {
+            "name": "Moxie",
+            "effect": {
+                "description": "Boosts the Attack stat after knocking out any Pokémon.",
+                "trigger": "onKnockOut",
+                "statBoost": {
+                    "attack": 1.5
+                }
+            }
+        }
+    ]
     },
     {
         "name": "Gardevoir",
@@ -345,16 +646,39 @@
         "spDefense": 255,
         "speed": 195,
         "moves": [
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special", "accuracy": 100},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpAtk", "chance": 30, "description": "May lower the target's Special Attack."}},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 20, "description": "May lower the target's Special Defense."}},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
             {"name": "Hyper Voice", "type": "Normal", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Energy Ball", "type": "Grass", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Energy Ball", "type": "Grass", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
             {"name": "Dazzling Gleam", "type": "Fairy", "power": 80, "category": "Special", "accuracy": 100}
         ],
-        "abilities": ["Synchronize", "Trace", "Telepathy"]
+        "abilities": [
+            {"name": "Synchronize",
+            "effect": {
+                "description": "Passes a burn, poison, or paralysis to the foe.",
+                "trigger": "statusCondition",
+                "passStatus": true
+            }
+        },
+        {
+            "name": "Trace",
+            "effect": {
+                "description": "Copies an opposing Pokémon's Ability when it enters battle.",
+                "trigger": "onEntry",
+                "copyAbility": true
+            }
+        },
+        {
+            "name": "Telepathy",
+            "effect": {
+                "description": "Anticipates an ally's attack and dodges it.",
+                "preventAllyDamage": true
+            }
+        }
+    ]
     },
     {
         "name": "Sylveon",
@@ -366,16 +690,36 @@
         "spDefense": 255,
         "speed": 135,
         "moves": [
-            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special", "accuracy": 100},
-            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Moonblast", "type": "Fairy", "power": 95, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpAtk", "chance": 30, "description": "May lower the target's Special Attack."}},
+            {"name": "Psychic", "type": "Psychic", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 20, "description": "May lower the target's Special Defense."}},
             {"name": "Hyper Voice", "type": "Normal", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Mystical Fire", "type": "Fire", "power": 75, "category": "Special", "accuracy": 100},
+            {"name": "Mystical Fire", "type": "Fire", "power": 75, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpAtk", "chance": 100, "description": "Lowers the target's Special Attack."}},
             {"name": "Dazzling Gleam", "type": "Fairy", "power": 80, "category": "Special", "accuracy": 100},
-            {"name": "Draining Kiss", "type": "Fairy", "power": 50, "category": "Special", "accuracy": 100},
-            {"name": "Calm Mind", "type": "Psychic", "power": 0, "category": "Status", "accuracy": 0}
+            {"name": "Draining Kiss", "type": "Fairy", "power": 50, "category": "Special", "accuracy": 100, "effect": {"name": "heal", "chance": 100, "description": "User recovers half the HP inflicted on the target."}},
+            {"name": "Calm Mind", "type": "Psychic", "power": 0, "category": "Status", "accuracy": 0, "effect": {"name": "boostSpAtkSpDef", "chance": 100, "description": "Boosts the user's Special Attack and Special Defense."}}
         ],
-        "abilities": ["Cute Charm", "Pixilate"]
+        "abilities": [
+            {"name": "Cute Charm",
+            "effect": {
+                "description": "Contact with the Pokémon may cause infatuation.",
+                "trigger": "onContact",
+                "chance": 0.3,
+                "statusCondition": "infatuation"
+            }
+        },
+        {
+            "name": "Pixilate",
+            "effect": {
+                "description": "Normal-type moves become Fairy-type moves. The power of those moves is boosted a little.",
+                "typeChange": {
+                    "from": "Normal",
+                    "to": "Fairy"
+                },
+                "powerBoost": 1.2
+            }
+        }
+    ]
     },
     {
         "name": "Azumarill",
@@ -387,19 +731,50 @@
         "spDefense": 175,
         "speed": 135,
         "moves": [
-            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Play Rough", "type": "Fairy", "power": 90, "category": "Physical", "accuracy": 90},
-            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100},
-            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100},
+            {"name": "Waterfall", "type": "Water", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "flinch", "chance": 20, "description": "May make the target flinch."}},
+            {"name": "Play Rough", "type": "Fairy", "power": 90, "category": "Physical", "accuracy": 90, "effect": {"name": "lowerAtk", "chance": 10, "description": "May lower the target's Attack."}},
+            {"name": "Ice Punch", "type": "Ice", "power": 75, "category": "Physical", "accuracy": 100, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
+            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerAtkDef", "chance": 100, "description": "Lowers the user's Attack and Defense."}},
             {"name": "Aqua Jet", "type": "Water", "power": 40, "category": "Physical", "accuracy": 100},
             {"name": "Hydro Pump", "type": "Water", "power": 110, "category": "Special", "accuracy": 80},
-            {"name": "Knock Off", "type": "Dark", "power": 65, "category": "Physical", "accuracy": 100},
-            {"name": "Belly Drum", "type": "Normal", "power": 0, "category": "Status", "accuracy": 0}
+            {"name": "Knock Off", "type": "Dark", "power": 65, "category": "Physical", "accuracy": 100, "effect": {"name": "removeItem", "chance": 100, "description": "Removes the target's held item."}},
+            {"name": "Belly Drum", "type": "Normal", "power": 0, "category": "Status", "accuracy": 0, "effect": {"name": "maxAttack", "chance": 100, "description": "Maximizes Attack at the cost of HP."}},
+            {"name": "Scald", "type": "Water", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "burn", "chance": 30, "description": "May burn the target."}}
         ],
-        "abilities": ["Thick Fat", "Huge Power", "Sap Sipper"]
+        "abilities": [
+            {"name": "Thick Fat",
+            "effect": {
+                "description": "The Pokémon is protected by a layer of thick fat, which halves the damage taken from Fire- and Ice-type moves.",
+                "damageReduction": {
+                    "types": ["Fire", "Ice"],
+                    "multiplier": 0.5
+                }
+            }
+        },
+        {
+            "name": "Huge Power",
+            "effect": {
+                "description": "Doubles the Pokémon's Attack stat.",
+                "statBoost": {
+                    "attack": 2
+                }
+            }
+        },
+        {
+            "name": "Sap Sipper",
+            "effect": {
+                "description": "Boosts the Attack stat if hit by a Grass-type move.",
+                "trigger": "hitByMove",
+                "type": "Grass",
+                "statBoost": {
+                    "attack": 1.5
+                }
+            }
+        }
+    ]
     },
     {
-        "name": "Giratina",
+        "name": "Giratina-origin",
         "type": ["Ghost", "Dragon"],
         "hp": 344,
         "attack": 225,
@@ -414,10 +789,17 @@
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
             {"name": "Shadow Ball", "type": "Ghost", "power": 80, "category": "Special", "accuracy": 100},
             {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special", "accuracy": 100},
-            {"name": "Hex", "type": "Ghost", "power": 65, "category": "Special", "accuracy": 100},
-            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100}
+            {"name": "Hex", "type": "Ghost", "power": 65, "category": "Special", "accuracy": 100, "effect": {"name": "doubleDamage", "chance": 100, "description": "Power doubles if the target has a status condition."}},
+            {"name": "Thunderbolt", "type": "Electric", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "paralyze", "chance": 10, "description": "May paralyze the target."}}
         ],
-        "abilities": ["Levitate"]
+        "abilities": [
+            {"name": "Levitate",
+            "effect": {
+                "description": "Gives full immunity to all Ground-type moves.",
+                "immunity": ["Ground"]
+            }
+        }
+    ]
     },
     {
         "name": "Kingdra",
@@ -431,14 +813,31 @@
         "moves": [
             {"name": "Hydro Pump", "type": "Water", "power": 110, "category": "Special", "accuracy": 80},
             {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special", "accuracy": 100},
-            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100},
+            {"name": "Ice Beam", "type": "Ice", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
             {"name": "Surf", "type": "Water", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Draco Meteor", "type": "Dragon", "power": 130, "category": "Special", "accuracy": 90},
-            {"name": "Blizzard", "type": "Ice", "power": 110, "category": "Special", "accuracy": 70},
-            {"name": "Flash Cannon", "type": "Steel", "power": 80, "category": "Special", "accuracy": 100}
+            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "confuse", "chance": 100, "description": "User becomes confused after use."}},
+            {"name": "Draco Meteor", "type": "Dragon", "power": 130, "category": "Special", "accuracy": 90, "effect": {"name": "lowerSpAtk", "chance": 100, "description": "Sharply lowers the user's Special Attack."}},
+            {"name": "Blizzard", "type": "Ice", "power": 110, "category": "Special", "accuracy": 70, "effect": {"name": "freeze", "chance": 10, "description": "May freeze the target."}},
+            {"name": "Flash Cannon", "type": "Steel", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}}
         ],
-        "abilities": ["Swift Swim", "Sniper"]
+        "abilities": [
+            {"name": "Swift Swim",
+            "effect": {
+                "description": "Boosts the Pokémon's Speed stat in rain.",
+                "trigger": "rain",
+                "statBoost": {
+                    "speed": 2
+                }
+            }
+        },
+        {
+            "name": "Sniper",
+            "effect": {
+                "description": "Powers up moves if they become critical hits.",
+                "criticalHitBoost": 1.5
+            }
+        }
+    ]
     },
     {
         "name": "Hydreigon",
@@ -451,15 +850,22 @@
         "speed": 195,
         "moves": [
             {"name": "Dragon Pulse", "type": "Dragon", "power": 85, "category": "Special", "accuracy": 100},
-            {"name": "Dark Pulse", "type": "Dark", "power": 80, "category": "Special", "accuracy": 100},
-            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Earth Power", "type": "Ground", "power": 90, "category": "Special", "accuracy": 100},
-            {"name": "Draco Meteor", "type": "Dragon", "power": 130, "category": "Special", "accuracy": 90},
-            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70},
-            {"name": "Flash Cannon", "type": "Steel", "power": 80, "category": "Special", "accuracy": 100},
+            {"name": "Dark Pulse", "type": "Dark", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "flinch", "chance": 20, "description": "May make the target flinch."}},
+            {"name": "Flamethrower", "type": "Fire", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Earth Power", "type": "Ground", "power": 90, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Draco Meteor", "type": "Dragon", "power": 130, "category": "Special", "accuracy": 90, "effect": {"name": "lowerSpAtk", "chance": 100, "description": "Sharply lowers the user's Special Attack."}},
+            {"name": "Focus Blast", "type": "Fighting", "power": 120, "category": "Special", "accuracy": 70, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
+            {"name": "Flash Cannon", "type": "Steel", "power": 80, "category": "Special", "accuracy": 100, "effect": {"name": "lowerSpDef", "chance": 10, "description": "May lower the target's Special Defense."}},
             {"name": "Hyper Voice", "type": "Normal", "power": 90, "category": "Special", "accuracy": 100}
         ],
-        "abilities": ["Levitate"]
+        "abilities": [
+            {"name": "Levitate",
+            "effect": {
+                "description": "Gives full immunity to all Ground-type moves.",
+                "immunity": ["Ground"]
+            }
+        }
+    ]
     },
     {
         "name": "Rayquaza",
@@ -471,16 +877,24 @@
         "spDefense": 185,
         "speed": 195,
         "moves": [
-            {"name": "Dragon Ascent", "type": "Flying", "power": 120, "category": "Physical", "accuracy": 100},
+            {"name": "Dragon Ascent", "type": "Flying", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerDefSpDef", "chance": 100, "description": "Lowers the user's Defense and Special Defense."}},
             {"name": "Dragon Claw", "type": "Dragon", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Extreme Speed", "type": "Normal", "power": 80, "category": "Physical", "accuracy": 100},
+            {"name": "Extreme Speed", "type": "Normal", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "priority", "chance": 100, "description": "Always goes first."}},
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
-            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Hurricane", "type": "Flying", "power": 110, "category": "Special", "accuracy": 70},
-            {"name": "Fire Blast", "type": "Fire", "power": 110, "category": "Special", "accuracy": 85},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80}
+            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "confuse", "chance": 100, "description": "User becomes confused after use."}},
+            {"name": "Hurricane", "type": "Flying", "power": 110, "category": "Special", "accuracy": 70, "effect": {"name": "confuse", "chance": 30, "description": "May confuse the target."}},
+            {"name": "Fire Blast", "type": "Fire", "power": 110, "category": "Special", "accuracy": 85, "effect": {"name": "burn", "chance": 10, "description": "May burn the target."}},
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}}
         ],
-        "abilities": ["Air Lock"]
+        "abilities": [
+            {"name": "Air Lock",
+            "effect": {
+                "description": "Eliminates the effects of weather.",
+                "trigger": "onEntry",
+                "nullifyWeather": true
+            }
+        }
+    ]
     },
     {
         "name": "Torterra",
@@ -493,14 +907,30 @@
         "speed": 135,
         "moves": [
             {"name": "Earthquake", "type": "Ground", "power": 100, "category": "Physical", "accuracy": 100},
-            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80},
-            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100},
-            {"name": "Giga Drain", "type": "Grass", "power": 75, "category": "Special", "accuracy": 100},
-            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100},
-            {"name": "Iron Tail", "type": "Steel", "power": 100, "category": "Physical", "accuracy": 75}
+            {"name": "Wood Hammer", "type": "Grass", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "recoil", "chance": 100, "description": "The user receives recoil damage."}},
+            {"name": "Stone Edge", "type": "Rock", "power": 100, "category": "Physical", "accuracy": 80, "effect": {"name": "crit", "chance": 100, "description": "High critical hit ratio."}},
+            {"name": "Crunch", "type": "Dark", "power": 80, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerDef", "chance": 20, "description": "May lower the target's Defense."}},
+            {"name": "Giga Drain", "type": "Grass", "power": 75, "category": "Special", "accuracy": 100, "effect": {"name": "heal", "chance": 100, "description": "User recovers half the HP inflicted on the target."}},
+            {"name": "Outrage", "type": "Dragon", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "confuse", "chance": 100, "description": "User becomes confused after use."}},
+            {"name": "Superpower", "type": "Fighting", "power": 120, "category": "Physical", "accuracy": 100, "effect": {"name": "lowerAtkDef", "chance": 100, "description": "Lowers the user's Attack and Defense."}},
+            {"name": "Iron Tail", "type": "Steel", "power": 100, "category": "Physical", "accuracy": 75, "effect": {"name": "lowerDef", "chance": 30, "description": "May lower the target's Defense."}}
         ],
-        "abilities": ["Overgrow", "Shell Armor"]
+        "abilities": [
+            {"name": "Overgrow",
+            "effect": {
+                "description": "Powers up Grass-type moves when the Pokémon's HP is low.",
+                "trigger": "lowHP",
+                "multiplier": 1.5,
+                "type": "Grass"
+            }
+        },
+        {
+            "name": "Shell Armor",
+            "effect": {
+                "description": "The Pokémon is protected against critical hits.",
+                "preventCriticalHits": true
+            }
+        }
+    ]
     }
 ]

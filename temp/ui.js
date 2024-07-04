@@ -1,17 +1,21 @@
 const specificPokemonNames = [
-    "charizard", "feraligatr", "venusaur", "blaziken", "tyranitar", "sceptile", 
-    "aggron", "mewtwo", "dragonite", "gyarados", "lapras", "weavile", "alakazam", 
-    "magmortar", "electivire", "salamence", "gardevoir", "sylveon", "azumarill", 
+    "charizard", "feraligatr", "venusaur", "blaziken", "tyranitar", "sceptile",
+    "aggron", "mewtwo", "dragonite", "gyarados", "lapras", "weavile", "alakazam",
+    "magmortar", "electivire", "salamence", "gardevoir", "sylveon", "azumarill",
     "giratina-origin", "kingdra", "hydreigon", "rayquaza", "torterra"
 ];
 
 let selectedTeam = [];
 const maxTeamSize = 6;
 let allPokemonData = [];
+let enemyTeam = [];
+let playerIndex = 0;
+let enemyIndex = 0;
+let playerTurn = true;
+let gameEnded = false;
 
 document.addEventListener("DOMContentLoaded", async function() {
     try {
-        await loadTypeChart();
         await loadPokemonData();
         initializeUI();
     } catch (error) {
@@ -41,18 +45,7 @@ async function loadPokemonData() {
             pokemon.frontImage = pokemonApiData.sprites.front_default;
             pokemon.backImage = pokemonApiData.sprites.back_default;
 
-            const abilities = await Promise.all(
-                pokemonApiData.abilities.map(async (abilityInfo) => {
-                    const abilityResponse = await fetch(abilityInfo.ability.url);
-                    const abilityData = await abilityResponse.json();
-                    return {
-                        name: abilityData.name,
-                        effect: abilityData.effect_entries.find(entry => entry.language.name === "en")?.short_effect || "No effect"
-                    };
-                })
-            );
-
-            pokemon.abilities = abilities;
+            pokemon.abilities = pokemonInfo.abilities;
             pokemon.selectedMoves = [];
         } catch (error) {
             console.error(`Error cargando datos del API para ${name}:`, error);
@@ -91,28 +84,21 @@ function initializeUI() {
 }
 
 function displayAvailablePokemon(pokemonData) {
-    const availablePokemonContainer = document.getElementById("available-pokemon");
-    availablePokemonContainer.innerHTML = "";
+    const availablePokemonContainer = $("#available-pokemon");
+    availablePokemonContainer.html("");
     pokemonData.forEach(function(pokemon) {
-        const pokemonItem = document.createElement("div");
-        pokemonItem.classList.add("pokemon-item");
+        const pokemonItem = $("<div>").addClass("pokemon-item");
 
-        const pokemonImg = document.createElement("img");
-        pokemonImg.src = pokemon.frontImage;
-        pokemonImg.alt = pokemon.name;
-        pokemonImg.addEventListener("click", function() {
+        const pokemonImg = $("<img>").attr("src", pokemon.frontImage).attr("alt", pokemon.name).click(function() {
             selectPokemon(pokemon, pokemonItem);
         });
 
-        const pokemonButton = document.createElement("button");
-        pokemonButton.textContent = pokemon.name;
-        pokemonButton.addEventListener("click", function() {
+        const pokemonButton = $("<button>").text(pokemon.name).click(function() {
             selectPokemon(pokemon, pokemonItem);
         });
 
-        pokemonItem.appendChild(pokemonImg);
-        pokemonItem.appendChild(pokemonButton);
-        availablePokemonContainer.appendChild(pokemonItem);
+        pokemonItem.append(pokemonImg, pokemonButton);
+        availablePokemonContainer.append(pokemonItem);
     });
 }
 
@@ -120,50 +106,43 @@ function selectPokemon(pokemon, pokemonItem) {
     const index = selectedTeam.indexOf(pokemon);
     if (index !== -1) {
         selectedTeam.splice(index, 1);
-        pokemonItem.classList.remove("selected");
+        pokemonItem.removeClass("selected");
     } else if (selectedTeam.length < maxTeamSize) {
         selectedTeam.push(pokemon);
-        pokemonItem.classList.add("selected");
+        pokemonItem.addClass("selected");
     }
     updateSelectedTeam();
 }
 
 function showMessage(message) {
-    const messageContainer = document.getElementById("message-container");
-    messageContainer.textContent = message;
+    Swal.fire({
+        text: message,
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
 }
 
 function updateSelectedTeam() {
-    const selectedTeamContainer = document.getElementById("selected-team");
-    selectedTeamContainer.innerHTML = "<h3>Equipo Seleccionado</h3>";
+    const selectedTeamContainer = $("#selected-team").html("<h3>Equipo Seleccionado</h3>");
     selectedTeam.forEach(function(pokemon) {
-        const pokemonItem = document.createElement("div");
-        pokemonItem.classList.add("pokemon-item");
+        const pokemonItem = $("<div>").addClass("pokemon-item");
 
-        const pokemonImg = document.createElement("img");
-        pokemonImg.src = pokemon.frontImage;
-        pokemonImg.alt = pokemon.name;
+        const pokemonImg = $("<img>").attr("src", pokemon.frontImage).attr("alt", pokemon.name);
 
-        const pokemonName = document.createElement("div");
-        pokemonName.textContent = pokemon.name;
+        const pokemonName = $("<div>").text(pokemon.name);
 
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "Quitar";
-        removeButton.addEventListener("click", function() {
+        const removeButton = $("<button>").text("Quitar").click(function() {
             deselectPokemon(pokemon);
         });
 
-        pokemonItem.appendChild(pokemonImg);
-        pokemonItem.appendChild(pokemonName);
-        pokemonItem.appendChild(removeButton);
-        selectedTeamContainer.appendChild(pokemonItem);
+        pokemonItem.append(pokemonImg, pokemonName, removeButton);
+        selectedTeamContainer.append(pokemonItem);
 
         displayPokemonDetails(pokemon);
     });
 
-    const teamSize = parseInt(document.getElementById("team-size-selector").value);
-    const confirmTeamButton = document.getElementById("confirm-team-button");
-    confirmTeamButton.disabled = selectedTeam.length < teamSize;
+    const teamSize = parseInt($("#team-size-selector").val());
+    const confirmTeamButton = $("#confirm-team-button").prop('disabled', selectedTeam.length < teamSize);
 
     if (selectedTeam.length < teamSize) {
         showMessage(`Seleccione ${teamSize} Pokémon para continuar.`);
@@ -173,35 +152,29 @@ function updateSelectedTeam() {
 }
 
 function displayPokemonDetails(pokemon) {
-    const movesContainer = document.getElementById("pokemon-moves");
-    const abilitiesContainer = document.getElementById("pokemon-abilities");
-
-    movesContainer.innerHTML = "<h4>Movimientos Disponibles</h4>";
-    abilitiesContainer.innerHTML = "<h4>Habilidades</h4>";
+    const movesContainer = $("#pokemon-moves").html("<h4>Movimientos Disponibles</h4>");
+    const abilitiesContainer = $("#pokemon-abilities").html("<h4>Habilidades</h4>");
 
     pokemon.moves.forEach(move => {
-        const moveButton = document.createElement("button");
-        moveButton.textContent = move.name;
-        moveButton.classList.add('move-button', move.type.toLowerCase());
+        const moveButton = $("<button>").text(move.name).addClass('move-button').addClass(move.type.toLowerCase());
         if (pokemon.selectedMoves.includes(move)) {
-            moveButton.classList.add('selected');
+            moveButton.addClass('selected');
         }
-        moveButton.addEventListener("click", function() {
+        moveButton.click(function() {
             selectMove(pokemon, move, moveButton);
         });
-        movesContainer.appendChild(moveButton);
+        movesContainer.append(moveButton);
     });
 
     pokemon.abilities.forEach(ability => {
-        const abilityButton = document.createElement("button");
-        abilityButton.textContent = ability.name;
+        const abilityButton = $("<button>").text(ability.name);
         if (pokemon.selectedAbility === ability) {
-            abilityButton.classList.add('selected');
+            abilityButton.addClass('selected');
         }
-        abilityButton.addEventListener("click", function() {
+        abilityButton.click(function() {
             selectAbility(pokemon, ability, abilityButton);
         });
-        abilitiesContainer.appendChild(abilityButton);
+        abilitiesContainer.append(abilityButton);
     });
 }
 
@@ -209,23 +182,27 @@ function selectMove(pokemon, move, moveButton) {
     const index = pokemon.selectedMoves.indexOf(move);
     if (index !== -1) {
         pokemon.selectedMoves.splice(index, 1);
-        moveButton.classList.remove('selected');
+        moveButton.removeClass('selected');
     } else if (pokemon.selectedMoves.length < 4) {
         pokemon.selectedMoves.push(move);
-        moveButton.classList.add('selected');
+        moveButton.addClass('selected');
     } else {
-        alert("Ya has seleccionado 4 movimientos.");
+        Swal.fire({
+            text: "Ya has seleccionado 4 movimientos.",
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
 function selectAbility(pokemon, ability, abilityButton) {
     if (pokemon.selectedAbility === ability) {
         pokemon.selectedAbility = null;
-        abilityButton.classList.remove('selected');
+        abilityButton.removeClass('selected');
     } else {
         pokemon.selectedAbility = ability;
-        document.querySelectorAll('#pokemon-abilities button').forEach(button => button.classList.remove('selected'));
-        abilityButton.classList.add('selected');
+        $("#pokemon-abilities button").removeClass('selected');
+        abilityButton.addClass('selected');
     }
 }
 
@@ -235,52 +212,46 @@ function deselectPokemon(pokemon) {
         selectedTeam.splice(index, 1);
         updateSelectedTeam();
     }
-    const pokemonItems = document.querySelectorAll('.pokemon-item');
-    pokemonItems.forEach(item => {
-        const button = item.querySelector('button');
-        if (button.textContent === pokemon.name) {
-            item.classList.remove("selected");
+    $(".pokemon-item").each(function() {
+        const button = $(this).find('button');
+        if (button.text() === pokemon.name) {
+            $(this).removeClass("selected");
         }
     });
 }
 
-document.getElementById("confirm-team-button").addEventListener("click", function() {
-    const teamSize = parseInt(document.getElementById("team-size-selector").value);
+$("#confirm-team-button").click(function() {
+    const teamSize = parseInt($("#team-size-selector").val());
     if (selectedTeam.length === teamSize) {
         saveSelectedTeam();
-        document.getElementById("team-selection-screen").classList.remove("active");
-        document.getElementById("battle-screen").classList.add("active");
+        $("#team-selection-screen").removeClass("active");
+        $("#battle-screen").addClass("active");
         displayPlayerTeam();
         startBattle();
     } else {
-        alert(`Seleccione un equipo de ${teamSize} Pokémon antes de iniciar la batalla.`);
+        Swal.fire({
+            text: `Seleccione un equipo de ${teamSize} Pokémon antes de iniciar la batalla.`,
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
     }
 });
 
 function displayPlayerTeam() {
-    const playerTeamContainer = document.getElementById("player-team");
-    playerTeamContainer.innerHTML = "";
+    const playerTeamContainer = $("#player-team").html("");
     selectedTeam.forEach(function(pokemon, index) {
-        const pokemonItem = document.createElement("div");
-        pokemonItem.classList.add("pokemon-item");
+        const pokemonItem = $("<div>").addClass("pokemon-item");
 
-        const pokemonImg = document.createElement("img");
-        pokemonImg.src = pokemon.backImage;
-        pokemonImg.alt = pokemon.name;
+        const pokemonImg = $("<img>").attr("src", pokemon.backImage).attr("alt", pokemon.name);
 
-        const pokemonName = document.createElement("div");
-        pokemonName.textContent = pokemon.name;
+        const pokemonName = $("<div>").text(pokemon.name);
 
-        const switchButton = document.createElement("button");
-        switchButton.textContent = "Cambiar";
-        switchButton.addEventListener("click", function() {
+        const switchButton = $("<button>").text("Cambiar").click(function() {
             switchPokemon(index);
         });
 
-        pokemonItem.appendChild(pokemonImg);
-        pokemonItem.appendChild(pokemonName);
-        pokemonItem.appendChild(switchButton);
-        playerTeamContainer.appendChild(pokemonItem);
+        pokemonItem.append(pokemonImg, pokemonName, switchButton);
+        playerTeamContainer.append(pokemonItem);
     });
 }
 
@@ -291,7 +262,11 @@ function switchPokemon(index) {
         playerTurn = false;
         nextTurn();
     } else {
-        alert("No puedes seleccionar un Pokémon debilitado o el mismo Pokémon actual.");
+        Swal.fire({
+            text: "No puedes seleccionar un Pokémon debilitado o el mismo Pokémon actual.",
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
@@ -299,14 +274,14 @@ function displayCurrentPokemon() {
     const playerPokemon = selectedTeam[playerIndex];
     const enemyPokemon = enemyTeam[enemyIndex];
 
-    document.getElementById("player-pokemon").innerHTML = `
+    $("#player-pokemon").html(`
         <img src="${playerPokemon.backImage}" alt="${playerPokemon.name}" style="width: 150px; height: 150px;">
         <p>${playerPokemon.name}</p>
-        <div class="health-bar"><div id="player-health" style="width: ${(playerPokemon.currentHP / playerPokemon.hp) * 100}%;"></div></div>`;
-    document.getElementById("enemy-pokemon").innerHTML = `
+        <div class="health-bar"><div id="player-health" style="width: ${(playerPokemon.currentHP / playerPokemon.hp) * 100}%;"></div></div>`);
+    $("#enemy-pokemon").html(`
         <img src="${enemyPokemon.frontImage}" alt="${enemyPokemon.name}" style="width: 150px; height: 150px;">
         <p>${enemyPokemon.name}</p>
-        <div class="health-bar"><div id="enemy-health" style="width: ${(enemyPokemon.currentHP / enemyPokemon.hp) * 100}%;"></div></div>`;
+        <div class="health-bar"><div id="enemy-health" style="width: ${(enemyPokemon.currentHP / enemyPokemon.hp) * 100}%;"></div></div>`);
 
     updateHealthBars();
     updateMoveButtons(playerPokemon, enemyPokemon);
@@ -317,17 +292,17 @@ function updateHealthBars() {
     const playerPokemon = selectedTeam[playerIndex];
     const enemyPokemon = enemyTeam[enemyIndex];
 
-    const playerHealthBar = document.getElementById("player-health");
-    const enemyHealthBar = document.getElementById("enemy-health");
+    const playerHealthBar = $("#player-health");
+    const enemyHealthBar = $("#enemy-health");
 
     if (playerHealthBar && playerPokemon) {
-        playerHealthBar.style.width = (playerPokemon.currentHP / playerPokemon.hp) * 100 + "%";
+        playerHealthBar.css("width", (playerPokemon.currentHP / playerPokemon.hp) * 100 + "%");
     } else {
         console.error("El objeto playerPokemon o la propiedad currentHP no existen");
     }
 
     if (enemyHealthBar && enemyPokemon) {
-        enemyHealthBar.style.width = (enemyPokemon.currentHP / enemyPokemon.hp) * 100 + "%";
+        enemyHealthBar.css("width", (enemyPokemon.currentHP / enemyPokemon.hp) * 100 + "%");
     } else {
         console.error("El objeto enemyPokemon o la propiedad currentHP no existen");
     }
@@ -335,8 +310,8 @@ function updateHealthBars() {
 }
 
 function scrollToBottom() {
-    const battleLog = document.getElementById("battle-log");
-    battleLog.scrollTop = battleLog.scrollHeight;
+    const battleLog = $("#battle-log");
+    battleLog.scrollTop(battleLog.prop("scrollHeight"));
 }
 
 function saveSelectedTeam() {
@@ -352,38 +327,29 @@ function saveFavoriteTeam(teamName) {
 }
 
 function loadFavoriteTeams() {
-    const favoriteTeamsContainer = document.getElementById("favorite-teams-container");
-    favoriteTeamsContainer.innerHTML = '';
+    const favoriteTeamsContainer = $("#favorite-teams-container").html('');
     const favoriteTeams = JSON.parse(localStorage.getItem('favoriteTeams')) || [];
     favoriteTeams.forEach(favorite => {
-        const teamButton = document.createElement('button');
-        teamButton.textContent = favorite.name;
-        teamButton.addEventListener('click', function() {
+        const teamButton = $("<button>").text(favorite.name).click(function() {
             selectedTeam = allPokemonData.filter(pokemon => favorite.team.includes(pokemon.name));
             updateFavoriteTeamPreview();
-            document.getElementById("start-battle-favorite-button").disabled = false;
+            $("#start-battle-favorite-button").prop('disabled', false);
         });
-        favoriteTeamsContainer.appendChild(teamButton);
+        favoriteTeamsContainer.append(teamButton);
     });
 }
 
 function updateFavoriteTeamPreview() {
-    const favoriteTeamPreviewContainer = document.getElementById("favorite-team-preview");
-    favoriteTeamPreviewContainer.innerHTML = "<h3>Vista Previa del Equipo</h3>";
+    const favoriteTeamPreviewContainer = $("#favorite-team-preview").html("<h3>Vista Previa del Equipo</h3>");
     selectedTeam.forEach(function(pokemon) {
-        const pokemonItem = document.createElement("div");
-        pokemonItem.classList.add("pokemon-item");
+        const pokemonItem = $("<div>").addClass("pokemon-item");
 
-        const pokemonImg = document.createElement("img");
-        pokemonImg.src = pokemon.frontImage;
-        pokemonImg.alt = pokemon.name;
+        const pokemonImg = $("<img>").attr("src", pokemon.frontImage).attr("alt", pokemon.name);
 
-        const pokemonName = document.createElement("div");
-        pokemonName.textContent = pokemon.name;
+        const pokemonName = $("<div>").text(pokemon.name);
 
-        pokemonItem.appendChild(pokemonImg);
-        pokemonItem.appendChild(pokemonName);
-        favoriteTeamPreviewContainer.appendChild(pokemonItem);
+        pokemonItem.append(pokemonImg, pokemonName);
+        favoriteTeamPreviewContainer.append(pokemonItem);
     });
 }
 
@@ -394,36 +360,47 @@ function deleteFavoriteTeam(teamName) {
     loadFavoriteTeams();
 }
 
-document.getElementById("save-favorite-team-button").addEventListener("click", function() {
-    const teamName = prompt("Ingrese el nombre para su equipo favorito:");
-    if (teamName) {
-        saveFavoriteTeam(teamName);
-    }
+$("#save-favorite-team-button").click(function() {
+    const teamName = Swal.fire({
+        title: 'Ingrese el nombre para su equipo favorito:',
+        input: 'text',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            saveFavoriteTeam(result.value);
+        }
+    });
 });
 
-document.getElementById("start-battle-favorite-button").addEventListener("click", function() {
+$("#start-battle-favorite-button").click(function() {
     if (selectedTeam.length === maxTeamSize) {
-        document.getElementById("favorite-teams-screen").classList.remove('active');
-        document.getElementById("battle-screen").classList.add('active');
+        $("#favorite-teams-screen").removeClass('active');
+        $("#battle-screen").addClass('active');
         displayPlayerTeam();
         startBattle();
     } else {
-        alert("Seleccione un equipo de 6 Pokémon antes de iniciar la batalla.");
+        Swal.fire({
+            text: "Seleccione un equipo de 6 Pokémon antes de iniciar la batalla.",
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
     }
 });
 
-document.getElementById("back-button").addEventListener("click", function() {
-    document.getElementById("favorite-teams-screen").classList.remove("active");
-    document.getElementById("start-screen").classList.add("active");
+$("#back-button").click(function() {
+    $("#favorite-teams-screen").removeClass("active");
+    $("#start-screen").addClass("active");
 });
 
-document.getElementById("back-to-start-button").addEventListener("click", function() {
-    document.getElementById("team-selection-screen").classList.remove("active");
-    document.getElementById("start-screen").classList.add("active");
+$("#back-to-start-button").click(function() {
+    $("#team-selection-screen").removeClass("active");
+    $("#start-screen").addClass("active");
 });
 
 function generateRandomTeam() {
-    const shuffled = allPokemonData.sort(() => 0.5 - Math.random());
+    const shuffled = _.shuffle(allPokemonData);
     const team = shuffled.slice(0, maxTeamSize);
     team.forEach(pokemon => pokemon.currentHP = pokemon.hp);
     return team;
@@ -443,15 +420,23 @@ function nextTurn() {
     if (gameEnded) return;
 
     if (playerIndex >= selectedTeam.length) {
-        document.getElementById("battle-log").innerHTML += "<p>Has perdido la batalla.</p>";
-        alert("Has perdido la batalla.");
+        $("#battle-log").append("<p>Has perdido la batalla.</p>");
+        Swal.fire({
+            text: "Has perdido la batalla.",
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
         gameEnded = true;
         displayRestartButton();
         return;
     }
     if (enemyIndex >= enemyTeam.length) {
-        document.getElementById("battle-log").innerHTML += "<p>¡Has ganado la batalla!</p>";
-        alert("¡Has ganado la batalla!");
+        $("#battle-log").append("<p>¡Has ganado la batalla!</p>");
+        Swal.fire({
+            text: "¡Has ganado la batalla!",
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
         gameEnded = true;
         displayRestartButton();
         return;
@@ -464,8 +449,12 @@ function nextTurn() {
             if (enemyPokemon.isFainted()) {
                 enemyIndex++;
                 if (enemyIndex >= enemyTeam.length) {
-                    document.getElementById("battle-log").innerHTML += "<p>¡Has ganado la batalla!</p>";
-                    alert("¡Has ganado la batalla!");
+                    $("#battle-log").append("<p>¡Has ganado la batalla!</p>");
+                    Swal.fire({
+                        text: "¡Has ganado la batalla!",
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
                     gameEnded = true;
                     displayRestartButton();
                     return;
@@ -480,28 +469,26 @@ function nextTurn() {
 }
 
 function selectNewPokemon() {
-    alert("Selecciona un nuevo Pokémon");
+    Swal.fire({
+        text: "Selecciona un nuevo Pokémon",
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
     displayPlayerTeam();
 }
 
 function displayRestartButton() {
-    const restartButton = document.createElement("button");
-    restartButton.textContent = "Reiniciar Juego";
-    restartButton.addEventListener("click", function() {
+    $("#restart-button").show().click(function() {
         location.reload();
     });
-    document.getElementById("battle-screen").appendChild(restartButton);
 }
 
 function updateMoveButtons(playerPokemon, enemyPokemon) {
-    const moveButtons = document.getElementById("move-buttons");
-    moveButtons.innerHTML = "";
+    const moveButtons = $("#move-buttons").html("");
     playerPokemon.selectedMoves.forEach(function(move) {
-        const btn = document.createElement("button");
-        btn.textContent = move.name;
-        btn.classList.add('move-button', move.type.toLowerCase());
-        btn.disabled = gameEnded;
-        btn.addEventListener("click", function() {
+        const btn = $("<button>").text(move.name).addClass('move-button').addClass(move.type.toLowerCase());
+        btn.prop('disabled', gameEnded);
+        btn.click(function() {
             if (gameEnded) return;
             console.log("Botón de movimiento " + move.name + " presionado");
             if (playerPokemon.speed >= enemyPokemon.speed) {
@@ -511,8 +498,12 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
                     } else {
                         enemyIndex++;
                         if (enemyIndex >= enemyTeam.length) {
-                            document.getElementById("battle-log").innerHTML += "<p>¡Has ganado la batalla!</p>";
-                            alert("¡Has ganado la batalla!");
+                            $("#battle-log").append("<p>¡Has ganado la batalla!</p>");
+                            Swal.fire({
+                                text: "¡Has ganado la batalla!",
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
                             gameEnded = true;
                             displayRestartButton();
                             return;
@@ -527,8 +518,12 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
                             if (enemyPokemon.isFainted()) {
                                 enemyIndex++;
                                 if (enemyIndex >= enemyTeam.length) {
-                                    document.getElementById("battle-log").innerHTML += "<p>¡Has ganado la batalla!</p>";
-                                    alert("¡Has ganado la batalla!");
+                                    $("#battle-log").append("<p>¡Has ganado la batalla!</p>");
+                                    Swal.fire({
+                                        text: "¡Has ganado la batalla!",
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    });
                                     gameEnded = true;
                                     displayRestartButton();
                                     return;
@@ -539,8 +534,12 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
                     } else {
                         playerIndex++;
                         if (playerIndex >= selectedTeam.length) {
-                            document.getElementById("battle-log").innerHTML += "<p>Has perdido la batalla.</p>";
-                            alert("Has perdido la batalla.");
+                            $("#battle-log").append("<p>Has perdido la batalla.</p>");
+                            Swal.fire({
+                                text: "Has perdido la batalla.",
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
                             gameEnded = true;
                             displayRestartButton();
                             return;
@@ -550,32 +549,36 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
                 });
             }
         });
-        moveButtons.appendChild(btn);
+        moveButtons.append(btn);
     });
 }
 
 function playerAttack(move, playerPokemon, enemyPokemon, callback) {
     const { damage, hit, message } = playerPokemon.calculateDamage(move, enemyPokemon);
-    document.getElementById("battle-log").innerHTML += `<p>${message}</p>`;
+    $("#battle-log").append(`<p>${message}</p>`);
     scrollToBottom();
     if (hit) {
         enemyPokemon.takeDamage(damage);
-        const effectiveness = getEffectiveness(move.type, enemyPokemon.types);
+        const effectiveness = getEffectiveness(move.type.toLowerCase(), enemyPokemon.types);
         let effectivenessMessage = "";
         if (effectiveness > 1) {
             effectivenessMessage = "¡Es súper efectivo!";
         } else if (effectiveness < 1) {
             effectivenessMessage = "No es muy efectivo...";
         }
-        document.getElementById("battle-log").innerHTML += `<p>${effectivenessMessage}</p>`;
+        $("#battle-log").append(`<p>${effectivenessMessage}</p>`);
         scrollToBottom();
         if (enemyPokemon.isFainted()) {
-            document.getElementById("battle-log").innerHTML += `<p>${enemyPokemon.name} se ha debilitado</p>`;
+            $("#battle-log").append(`<p>${enemyPokemon.name} se ha debilitado</p>`);
             scrollToBottom();
             enemyIndex++;
             if (enemyIndex >= enemyTeam.length) {
-                document.getElementById("battle-log").innerHTML += "<p>¡Has ganado la batalla!</p>";
-                alert("¡Has ganado la batalla!");
+                $("#battle-log").append("<p>¡Has ganado la batalla!</p>");
+                Swal.fire({
+                    text: "¡Has ganado la batalla!",
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
                 gameEnded = true;
                 displayRestartButton();
                 return;
@@ -597,28 +600,32 @@ function enemyAttack(playerPokemon, enemyPokemon, callback) {
         return;
     }
 
-    const enemyMove = enemyPokemon.selectedMoves[Math.floor(Math.random() * enemyPokemon.selectedMoves.length)];
+    const enemyMove = _.sample(enemyPokemon.selectedMoves);
     const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
-    document.getElementById("battle-log").innerHTML += `<p>${message}</p>`;
+    $("#battle-log").append(`<p>${message}</p>`);
     scrollToBottom();
     if (hit) {
         playerPokemon.takeDamage(damage);
-        const effectiveness = getEffectiveness(enemyMove.type, playerPokemon.types);
+        const effectiveness = getEffectiveness(enemyMove.type.toLowerCase(), playerPokemon.types);
         let effectivenessMessage = "";
         if (effectiveness > 1) {
             effectivenessMessage = "¡Es súper efectivo!";
         } else if (effectiveness < 1) {
             effectivenessMessage = "No es muy efectivo...";
         }
-        document.getElementById("battle-log").innerHTML += `<p>${effectivenessMessage}</p>`;
+        $("#battle-log").append(`<p>${effectivenessMessage}</p>`);
         scrollToBottom();
         if (playerPokemon.isFainted()) {
-            document.getElementById("battle-log").innerHTML += `<p>${playerPokemon.name} se ha debilitado</p>`;
+            $("#battle-log").append(`<p>${playerPokemon.name} se ha debilitado</p>`);
             scrollToBottom();
             playerIndex++;
             if (playerIndex >= selectedTeam.length) {
-                document.getElementById("battle-log").innerHTML += "<p>Has perdido la batalla.</p>";
-                alert("Has perdido la batalla.");
+                $("#battle-log").append("<p>Has perdido la batalla.</p>");
+                Swal.fire({
+                    text: "Has perdido la batalla.",
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
                 gameEnded = true;
                 displayRestartButton();
                 return;
