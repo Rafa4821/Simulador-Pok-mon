@@ -1,7 +1,7 @@
 class Move {
     constructor(name, type, power, category, accuracy, effect) {
         this.name = name;
-        this.type = type;
+        this.type = type.toLowerCase(); // Asegurarse de que el tipo siempre esté en minúsculas
         this.power = power;
         this.category = category; // "physical" o "special"
         this.accuracy = accuracy; // Probabilidad de acertar
@@ -40,12 +40,17 @@ class Pokemon {
     }
 
     calculateDamage(move, opponent) {
+        if (move === undefined) {
+            console.error('El movimiento no está definido');
+            return;
+        }
+
         const accuracyCheck = Math.random() * 100;
         if (accuracyCheck > move.accuracy) {
             return { damage: 0, hit: false, message: `${this.name} usa ${move.name} pero falla.` }; // El ataque falla
         }
 
-        const effectiveness = getEffectiveness(move.type.toLowerCase(), opponent.types);
+        const effectiveness = getEffectiveness(move.type, opponent.types);
         let damage;
         if (move.category === "physical") {
             damage = Math.floor((move.power * (this.attack / opponent.defense)) * effectiveness);
@@ -86,18 +91,19 @@ const typeChart = {
 
 function getEffectiveness(moveType, opponentTypes) {
     let effectiveness = 1;
+    moveType = moveType.toLowerCase(); // Convierte el tipo de movimiento a minúsculas
     if (!typeChart[moveType]) {
         console.error(`Tipo de movimiento desconocido: ${moveType}`);
         return effectiveness;
     }
     opponentTypes.forEach(type => {
-        if (typeChart[moveType].double_damage_to.includes(type.toLowerCase())) {
+        if (typeChart[moveType].double_damage_to.includes(type)) {
             effectiveness *= 2;
         }
-        if (typeChart[moveType].half_damage_to.includes(type.toLowerCase())) {
+        if (typeChart[moveType].half_damage_to.includes(type)) {
             effectiveness *= 0.5;
         }
-        if (typeChart[moveType].no_damage_to.includes(type.toLowerCase())) {
+        if (typeChart[moveType].no_damage_to.includes(type)) {
             effectiveness *= 0;
         }
     });

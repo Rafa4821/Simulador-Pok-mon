@@ -1,18 +1,13 @@
 const specificPokemonNames = [
-    "charizard", "feraligatr", "venusaur", "blaziken", "tyranitar", "sceptile",
-    "aggron", "mewtwo", "dragonite", "gyarados", "lapras", "weavile", "alakazam",
-    "magmortar", "electivire", "salamence", "gardevoir", "sylveon", "azumarill",
+    "charizard", "feraligatr", "venusaur", "blaziken", "tyranitar", "sceptile", 
+    "aggron", "mewtwo", "dragonite", "gyarados", "lapras", "weavile", "alakazam", 
+    "magmortar", "electivire", "salamence", "gardevoir", "sylveon", "azumarill", 
     "giratina-origin", "kingdra", "hydreigon", "rayquaza", "torterra"
 ];
 
 let selectedTeam = [];
 const maxTeamSize = 6;
 let allPokemonData = [];
-let enemyTeam = [];
-let playerIndex = 0;
-let enemyIndex = 0;
-let playerTurn = true;
-let gameEnded = false;
 
 document.addEventListener("DOMContentLoaded", async function() {
     try {
@@ -45,7 +40,12 @@ async function loadPokemonData() {
             pokemon.frontImage = pokemonApiData.sprites.front_default;
             pokemon.backImage = pokemonApiData.sprites.back_default;
 
-            pokemon.abilities = pokemonInfo.abilities;
+            const abilities = pokemonInfo.abilities.map((abilityInfo) => ({
+                name: abilityInfo.name,
+                effect: abilityInfo.effect.description
+            }));
+
+            pokemon.abilities = abilities;
             pokemon.selectedMoves = [];
         } catch (error) {
             console.error(`Error cargando datos del API para ${name}:`, error);
@@ -81,6 +81,20 @@ function initializeUI() {
     } else {
         console.error("El elemento start-button no existe o no se ha cargado aún");
     }
+
+    $("#favorite-teams-button").click(function() {
+        loadFavoriteTeams();
+        $("#start-screen").removeClass("active");
+        $("#favorite-teams-screen").addClass("active");
+    });
+
+    $("#delete-favorite-team-button").click(function() {
+        const teamName = $("#favorite-teams-container").find(".selected").text();
+        if (teamName) {
+            deleteFavoriteTeam(teamName);
+            $("#start-battle-favorite-button").prop('disabled', true);
+        }
+    });
 }
 
 function displayAvailablePokemon(pokemonData) {
@@ -157,6 +171,8 @@ function displayPokemonDetails(pokemon) {
 
     pokemon.moves.forEach(move => {
         const moveButton = $("<button>").text(move.name).addClass('move-button').addClass(move.type.toLowerCase());
+        moveButton.attr("title", `Name: ${move.name}\nType: ${move.type}\nPower: ${move.power}\nAccuracy: ${move.accuracy}\nEffect: ${move.effect ? move.effect.description : 'None'}`);
+
         if (pokemon.selectedMoves.includes(move)) {
             moveButton.addClass('selected');
         }
@@ -167,7 +183,9 @@ function displayPokemonDetails(pokemon) {
     });
 
     pokemon.abilities.forEach(ability => {
-        const abilityButton = $("<button>").text(ability.name);
+        const abilityButton = $("<button>").text(ability.name).addClass('ability-button');
+        abilityButton.attr("title", `Name: ${ability.name}\nEffect: ${ability.effect}`);
+
         if (pokemon.selectedAbility === ability) {
             abilityButton.addClass('selected');
         }
@@ -175,6 +193,13 @@ function displayPokemonDetails(pokemon) {
             selectAbility(pokemon, ability, abilityButton);
         });
         abilitiesContainer.append(abilityButton);
+    });
+
+    // Aplicar tooltips
+    $('[title]').tooltip({
+        content: function() {
+            return $(this).prop('title').replace(/\n/g, '<br>');
+        }
     });
 }
 
@@ -334,6 +359,8 @@ function loadFavoriteTeams() {
             selectedTeam = allPokemonData.filter(pokemon => favorite.team.includes(pokemon.name));
             updateFavoriteTeamPreview();
             $("#start-battle-favorite-button").prop('disabled', false);
+            $("#favorite-teams-container button").removeClass('selected');
+            $(this).addClass('selected');
         });
         favoriteTeamsContainer.append(teamButton);
     });
@@ -361,7 +388,7 @@ function deleteFavoriteTeam(teamName) {
 }
 
 $("#save-favorite-team-button").click(function() {
-    const teamName = Swal.fire({
+    Swal.fire({
         title: 'Ingrese el nombre para su equipo favorito:',
         input: 'text',
         showCancelButton: true,
@@ -551,6 +578,12 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
         });
         moveButtons.append(btn);
     });
+
+    $('[title]').tooltip({
+        content: function() {
+            return $(this).prop('title').replace(/\n/g, '<br>');
+        }
+    });
 }
 
 function playerAttack(move, playerPokemon, enemyPokemon, callback) {
@@ -559,7 +592,7 @@ function playerAttack(move, playerPokemon, enemyPokemon, callback) {
     scrollToBottom();
     if (hit) {
         enemyPokemon.takeDamage(damage);
-        const effectiveness = getEffectiveness(move.type.toLowerCase(), enemyPokemon.types);
+        const effectiveness = getEffectiveness(move.type, enemyPokemon.types);
         let effectivenessMessage = "";
         if (effectiveness > 1) {
             effectivenessMessage = "¡Es súper efectivo!";
@@ -601,12 +634,23 @@ function enemyAttack(playerPokemon, enemyPokemon, callback) {
     }
 
     const enemyMove = _.sample(enemyPokemon.selectedMoves);
-    const { damage, hit, message } = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+    if (!enemyMove) {
+        console.error('El movimiento enemigo no está definido');
+        return;
+    }
+
+    const damageResult = enemyPokemon.calculateDamage(enemyMove, playerPokemon);
+    if (!damageResult) {
+        console.error('calculateDamage no devolvió un resultado');
+        return;
+    }
+
+    const { damage, hit, message } = damageResult;
     $("#battle-log").append(`<p>${message}</p>`);
     scrollToBottom();
     if (hit) {
         playerPokemon.takeDamage(damage);
-        const effectiveness = getEffectiveness(enemyMove.type.toLowerCase(), playerPokemon.types);
+        const effectiveness = getEffectiveness(enemyMove.type, playerPokemon.types);
         let effectivenessMessage = "";
         if (effectiveness > 1) {
             effectivenessMessage = "¡Es súper efectivo!";
