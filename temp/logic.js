@@ -1,18 +1,18 @@
 class Move {
     constructor(name, type, power, category, accuracy, effect) {
         this.name = name;
-        this.type = type.toLowerCase(); // Asegurarse de que el tipo siempre esté en minúsculas
+        this.type = type.toLowerCase();
         this.power = power;
-        this.category = category; // "physical" o "special"
-        this.accuracy = accuracy; // Probabilidad de acertar
-        this.effect = effect; // Efecto del movimiento
+        this.category = category || "physical";
+        this.accuracy = accuracy;
+        this.effect = effect;
     }
 }
 
 class Pokemon {
     constructor(name, types, hp, attack, defense, spAttack, spDefense, speed, moves, abilities, frontImage, backImage) {
         this.name = name;
-        this.types = types; // Ahora es un array
+        this.types = types.map(type => type.toLowerCase());
         this.hp = hp;
         this.attack = attack;
         this.defense = defense;
@@ -23,8 +23,8 @@ class Pokemon {
         this.abilities = abilities;
         this.frontImage = frontImage;
         this.backImage = backImage;
-        this.currentHP = hp; // HP actual durante la batalla
-        this.selectedMoves = [];
+        this.currentHP = hp;
+        this.selectedMoves = this.moves.slice(0, 4);
         this.selectedAbility = null;
     }
 
@@ -40,29 +40,38 @@ class Pokemon {
     }
 
     calculateDamage(move, opponent) {
-        if (move === undefined) {
+        if (!move) {
             console.error('El movimiento no está definido');
-            return;
+            return { damage: 0, hit: false, message: `${this.name} intentó atacar pero falló.` };
         }
 
         const accuracyCheck = Math.random() * 100;
         if (accuracyCheck > move.accuracy) {
-            return { damage: 0, hit: false, message: `${this.name} usa ${move.name} pero falla.` }; // El ataque falla
+            return { damage: 0, hit: false, message: `${this.name} usa ${move.name} pero falla.` };
         }
 
         const effectiveness = getEffectiveness(move.type, opponent.types);
-        let damage;
+        console.log(`Calculando daño: ${this.name} usa ${move.name} contra ${opponent.name}`);
+        console.log(`Estadísticas: ataque=${this.attack}, defensa=${opponent.defense}, ataque especial=${this.spAttack}, defensa especial=${opponent.spDefense}`);
+        console.log(`Poder del movimiento: ${move.power}, Categoría: ${move.category}, Efectividad: ${effectiveness}`);
+
+        let damage = 0;
         if (move.category === "physical") {
             damage = Math.floor((move.power * (this.attack / opponent.defense)) * effectiveness);
         } else if (move.category === "special") {
             damage = Math.floor((move.power * (this.spAttack / opponent.spDefense)) * effectiveness);
-        } else {
-            damage = 0; // Si el movimiento no tiene una categoría definida, no hace daño
         }
 
-        if (isNaN(damage)) {
-            damage = 0; // Evita mostrar NaN como daño
+        if (isNaN(damage) || damage < 0) {
+            damage = 0;
         }
+
+        const level = parseInt($("#level-selector").val());
+        const baseDamage = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * move.power * (move.category === "physical" ? this.attack : this.spAttack) / (move.category === "physical" ? opponent.defense : opponent.spDefense)) / 50) + 2;
+        damage = Math.floor(baseDamage * effectiveness);
+
+        console.log(`Daño base calculado: ${baseDamage}`);
+        console.log(`Daño final calculado: ${damage}`);
 
         return { damage: damage, hit: true, message: `${this.name} usa ${move.name} y causa ${damage} de daño a ${opponent.name}` };
     }
@@ -91,12 +100,13 @@ const typeChart = {
 
 function getEffectiveness(moveType, opponentTypes) {
     let effectiveness = 1;
-    moveType = moveType.toLowerCase(); // Convierte el tipo de movimiento a minúsculas
+    moveType = moveType.toLowerCase();
     if (!typeChart[moveType]) {
         console.error(`Tipo de movimiento desconocido: ${moveType}`);
         return effectiveness;
     }
     opponentTypes.forEach(type => {
+        type = type.toLowerCase();
         if (typeChart[moveType].double_damage_to.includes(type)) {
             effectiveness *= 2;
         }
