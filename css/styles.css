@@ -8,17 +8,17 @@
     margin: 10px;
     padding: 10px;
     color: white;
-    background-color: red; /* Color rojo */
+    background-color: red; 
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.3s; /* Transición para el hover */
+    transition: background-color 0.3s; 
 }
 
 /* Estilo de los selectores al pasar el ratón */
 .styled-select:hover {
-    background-color: black; /* Color negro al pasar el ratón */
+    background-color: black; 
 }
 
 /* Estilos generales */
@@ -43,7 +43,7 @@ body {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px; 
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -65,8 +65,8 @@ body {
 
 /* Estilos generales de los botones */
 button {
-    margin: 10px;
-    padding: 10px 20px;
+    margin: 5px; 
+    padding: 5px 10px; 
     color: white;
     background-color: red;
     border: none;
@@ -91,13 +91,13 @@ button:disabled {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin: 20px 0;
+    margin: 10px 0; 
 }
 
 /* Elemento individual de la lista de Pokémon */
 .pokemon-item {
-    width: 100px;
-    margin: 10px;
+    width: 80px; 
+    margin: 5px; 
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -149,11 +149,11 @@ button:disabled {
 
 /* Registro de la batalla */
 .battle-log {
-    height: 150px;
+    height: 100px; 
     overflow-y: scroll;
     margin: 10px 0;
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 5px; 
     text-align: left;
 }
 
@@ -164,7 +164,7 @@ button:disabled {
 
 /* Imagen del Pokémon en batalla */
 .pokemon-display img {
-    width: 100px;
+    width: 80px; /* Reducido el tamaño para optimizar espacio */
     height: auto;
 }
 
@@ -173,13 +173,13 @@ button:disabled {
     display: flex;
     justify-content: space-around;
     flex-wrap: nowrap;
-    margin-top: 20px;
+    margin-top: 10px; 
 }
 
 /* Botones de movimientos con colores según el tipo */
 .move-button {
     margin: 5px;
-    padding: 10px;
+    padding: 5px;
     border: none;
     border-radius: 5px;
     color: white;
@@ -262,7 +262,7 @@ button:disabled {
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; /* Ajusta la posición del tooltip */
+    bottom: 125%;
     left: 50%;
     margin-left: -100px;
     opacity: 0;
@@ -294,7 +294,7 @@ button:disabled {
     }
 
     .battle-log {
-        height: 100px;
+        height: 80px; /* Reducido el tamaño para optimizar espacio */
     }
 }
 
@@ -312,11 +312,3 @@ button:disabled {
     background-color: green;
 }
 
-/* Indicación de Pokémon debilitado */
-.pokemon-fainted img {
-    filter: grayscale(100%);
-}
-
-.pokemon-fainted {
-    opacity: 0.6;
-}
