@@ -68,17 +68,16 @@ button {
     margin: 10px;
     padding: 10px 20px;
     color: white;
-    background-color: red; /* Color rojo */
+    background-color: red;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: bold; /* Asegura que el texto sea legible */
-    transition: background-color 0.3s; /* Transición para el hover */
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
-/* Estilo de los botones al pasar el ratón */
 button:hover {
-    background-color: black; /* Color negro al pasar el ratón */
+    background-color: black;
 }
 
 /* Estilo de los botones deshabilitados */
@@ -120,7 +119,7 @@ button:disabled {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    color: #000; /* Asegura que el texto sea legible en el fondo amarillo */
+    color: #000;
 }
 
 /* Botón del Pokémon seleccionado */
