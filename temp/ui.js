@@ -8,6 +8,10 @@ const specificPokemonNames = [
 let selectedTeam = [];
 const maxTeamSize = 6;
 let allPokemonData = [];
+let playerIndex = 0;
+let enemyIndex = 0;
+let playerTurn = true;
+let gameEnded = false;
 
 document.addEventListener("DOMContentLoaded", async function() {
     try {
@@ -301,11 +305,13 @@ function displayCurrentPokemon() {
     $("#player-pokemon").html(`
         <img src="${playerPokemon.backImage}" alt="${playerPokemon.name}" style="width: 150px; height: 150px;">
         <p>${playerPokemon.name}</p>
-        <div class="health-bar"><div id="player-health" style="width: ${(playerPokemon.currentHP / playerPokemon.hp) * 100}%;"></div></div>`);
+        <div class="health-bar"><div id="player-health" style="width: ${(playerPokemon.currentHP / playerPokemon.hp) * 100}%;"></div></div>
+        <p>${playerPokemon.currentHP} / ${playerPokemon.hp}</p>`);
     $("#enemy-pokemon").html(`
         <img src="${enemyPokemon.frontImage}" alt="${enemyPokemon.name}" style="width: 150px; height: 150px;">
         <p>${enemyPokemon.name}</p>
-        <div class="health-bar"><div id="enemy-health" style="width: ${(enemyPokemon.currentHP / enemyPokemon.hp) * 100}%;"></div></div>`);
+        <div class="health-bar"><div id="enemy-health" style="width: ${(enemyPokemon.currentHP / enemyPokemon.hp) * 100}%;"></div></div>
+        <p>${enemyPokemon.currentHP} / ${enemyPokemon.hp}</p>`);
 
     updateHealthBars();
     updateMoveButtons(playerPokemon, enemyPokemon);
@@ -320,13 +326,29 @@ function updateHealthBars() {
     const enemyHealthBar = $("#enemy-health");
 
     if (playerHealthBar && playerPokemon) {
-        playerHealthBar.css("width", (playerPokemon.currentHP / playerPokemon.hp) * 100 + "%");
+        const playerHealthPercentage = (playerPokemon.currentHP / playerPokemon.hp) * 100;
+        playerHealthBar.css("width", playerHealthPercentage + "%");
+        if (playerHealthPercentage <= 25) {
+            playerHealthBar.css("background-color", "red");
+        } else if (playerHealthPercentage <= 50) {
+            playerHealthBar.css("background-color", "yellow");
+        } else {
+            playerHealthBar.css("background-color", "green");
+        }
     } else {
         console.error("El objeto playerPokemon o la propiedad currentHP no existen");
     }
 
     if (enemyHealthBar && enemyPokemon) {
-        enemyHealthBar.css("width", (enemyPokemon.currentHP / enemyPokemon.hp) * 100 + "%");
+        const enemyHealthPercentage = (enemyPokemon.currentHP / enemyPokemon.hp) * 100;
+        enemyHealthBar.css("width", enemyHealthPercentage + "%");
+        if (enemyHealthPercentage <= 25) {
+            enemyHealthBar.css("background-color", "red");
+        } else if (enemyHealthPercentage <= 50) {
+            enemyHealthBar.css("background-color", "yellow");
+        } else {
+            enemyHealthBar.css("background-color", "green");
+        }
     } else {
         console.error("El objeto enemyPokemon o la propiedad currentHP no existen");
     }
@@ -441,13 +463,14 @@ function startBattle() {
     playerTurn = true;
     gameEnded = false;
     selectedTeam.forEach(pokemon => pokemon.currentHP = pokemon.hp);
+    enemyTeam.forEach(pokemon => pokemon.currentHP = pokemon.hp);
     nextTurn();
 }
 
 function nextTurn() {
     if (gameEnded) return;
 
-    if (playerIndex >= selectedTeam.length) {
+    if (selectedTeam.every(pokemon => pokemon.isFainted())) {
         $("#battle-log").append("<p>Has perdido la batalla.</p>");
         Swal.fire({
             text: "Has perdido la batalla.",
@@ -458,7 +481,7 @@ function nextTurn() {
         displayRestartButton();
         return;
     }
-    if (enemyIndex >= enemyTeam.length) {
+    if (enemyTeam.every(pokemon => pokemon.isFainted())) {
         $("#battle-log").append("<p>¡Has ganado la batalla!</p>");
         Swal.fire({
             text: "¡Has ganado la batalla!",
@@ -488,21 +511,41 @@ function nextTurn() {
                     return;
                 }
             }
-            playerTurn = true;
-            displayCurrentPokemon();
+            if (playerPokemon.isFainted()) {
+                alertAndSwitchToNextPokemon();
+            } else {
+                playerTurn = true;
+                displayCurrentPokemon();
+            }
         });
     } else {
         displayCurrentPokemon();
     }
 }
 
-function selectNewPokemon() {
+function alertAndSwitchToNextPokemon() {
     Swal.fire({
-        text: "Selecciona un nuevo Pokémon",
+        text: "Tu Pokémon ha sido debilitado. Selecciona otro Pokémon.",
         icon: 'info',
         confirmButtonText: 'OK'
+    }).then(() => {
+        const nextPokemonIndex = selectedTeam.findIndex(pokemon => !pokemon.isFainted());
+        if (nextPokemonIndex !== -1) {
+            playerIndex = nextPokemonIndex;
+            displayCurrentPokemon();
+            playerTurn = false;
+            nextTurn();
+        } else {
+            $("#battle-log").append("<p>Has perdido la batalla.</p>");
+            Swal.fire({
+                text: "Has perdido la batalla.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            gameEnded = true;
+            displayRestartButton();
+        }
     });
-    displayPlayerTeam();
 }
 
 function displayRestartButton() {
@@ -516,9 +559,18 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
     playerPokemon.selectedMoves.forEach(function(move) {
         const btn = $("<button>").text(move.name).addClass('move-button').addClass(move.type.toLowerCase());
         btn.prop('disabled', gameEnded);
+        btn.attr("title", `Name: ${move.name}\nType: ${move.type}\nPower: ${move.power}\nAccuracy: ${move.accuracy}\nEffect: ${move.effect ? move.effect.description : 'None'}`);
         btn.click(function() {
             if (gameEnded) return;
             console.log("Botón de movimiento " + move.name + " presionado");
+            if (playerPokemon.isFainted()) {
+                Swal.fire({
+                    text: "No puedes usar un Pokémon debilitado.",
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
             if (playerPokemon.speed >= enemyPokemon.speed) {
                 playerAttack(move, playerPokemon, enemyPokemon, function() {
                     if (!enemyPokemon.isFainted()) {
@@ -560,19 +612,7 @@ function updateMoveButtons(playerPokemon, enemyPokemon) {
                             nextTurn();
                         });
                     } else {
-                        playerIndex++;
-                        if (playerIndex >= selectedTeam.length) {
-                            $("#battle-log").append("<p>Has perdido la batalla.</p>");
-                            Swal.fire({
-                                text: "Has perdido la batalla.",
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                            gameEnded = true;
-                            displayRestartButton();
-                            return;
-                        }
-                        selectNewPokemon();
+                        alertAndSwitchToNextPokemon();
                     }
                 });
             }

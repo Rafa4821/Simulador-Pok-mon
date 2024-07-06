@@ -298,3 +298,26 @@ button:disabled {
         height: 100px;
     }
 }
+
+/* Barra de salud */
+.health-bar {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.health-bar div {
+    height: 20px;
+    background-color: green;
+}
+
+/* Indicación de Pokémon debilitado */
+.pokemon-fainted img {
+    filter: grayscale(100%);
+}
+
+.pokemon-fainted {
+    opacity: 0.6;
+}

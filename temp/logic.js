@@ -119,3 +119,75 @@ function getEffectiveness(moveType, opponentTypes) {
     });
     return effectiveness;
 }
+
+function calculateDamage(attacker, defender, move) {
+    const { damage, hit, message } = attacker.calculateDamage(move, defender);
+    $("#battle-log").append(`<p>${message}</p>`);
+    if (hit) {
+        defender.takeDamage(damage);
+        const effectiveness = getEffectiveness(move.type, defender.types);
+        let effectivenessMessage = '';
+        if (effectiveness > 1) {
+            effectivenessMessage = "¡Es muy efectivo!";
+        } else if (effectiveness < 1 && effectiveness > 0) {
+            effectivenessMessage = "No es muy efectivo...";
+        } else if (effectiveness === 0) {
+            effectivenessMessage = "¡No afecta al Pokémon enemigo!";
+        }
+        if (effectivenessMessage) {
+            $("#battle-log").append(`<p>${effectivenessMessage}</p>`);
+        }
+        updateHealthBars();
+    }
+    if (checkFainted(defender)) {
+        handleFaintedPokemon(defender, userTeam);
+    }
+    scrollToBottom();
+}
+
+function checkFainted(pokemon) {
+    return pokemon.currentHP <= 0;
+}
+
+function handleFaintedPokemon(pokemon, team) {
+    if (checkFainted(pokemon)) {
+        Swal.fire({
+            title: '¡Tu Pokémon ha sido debilitado!',
+            text: 'Selecciona otro Pokémon para continuar la batalla.',
+            icon: 'warning',
+            confirmButtonText: 'Seleccionar'
+        }).then(() => {
+            showPokemonSelectionScreen(team);
+        });
+        return true;
+    }
+    return false;
+}
+
+function endTurn() {
+    playerTurn = !playerTurn;
+    nextTurn();
+}
+
+function showPokemonSelectionScreen(team) {
+    const pokemonSelectionContainer = $("#pokemon-selection-container");
+    pokemonSelectionContainer.html(""); // Limpiar contenedor
+    team.forEach((pokemon, index) => {
+        if (!pokemon.isFainted()) {
+            const pokemonButton = $("<button>").text(pokemon.name).click(() => {
+                switchPokemon(index);
+                $("#pokemon-selection-container").hide();
+            });
+            pokemonSelectionContainer.append(pokemonButton);
+        }
+    });
+    pokemonSelectionContainer.show();
+}
+
+function updatePokemonVisuals(pokemonElement, pokemon) {
+    if (checkFainted(pokemon)) {
+        pokemonElement.addClass('pokemon-fainted');
+    } else {
+        pokemonElement.removeClass('pokemon-fainted');
+    }
+}
