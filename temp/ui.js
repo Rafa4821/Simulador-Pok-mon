@@ -1,3 +1,4 @@
+
 const specificPokemonNames = [
     "charizard", "feraligatr", "venusaur", "blaziken", "tyranitar", "sceptile", 
     "aggron", "mewtwo", "dragonite", "gyarados", "lapras", "weavile", "alakazam", 
