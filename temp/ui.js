@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 });
 
 async function loadPokemonData() {
-    const response = await fetch('temp/pokemonData.json');
+    const response = await fetch('pokemonData.json');
     const pokemonData = await response.json();
 
     const pokemonPromises = specificPokemonNames.map(async (name) => {
